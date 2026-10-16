@@ -2,10 +2,8 @@ const express = require("express");
 const path = require("path");
 const multer = require("multer");
 const fs = require("fs");
-
 const app = express();
 
-// === GANTI USER & PASS DISINI ===
 const MY_USER = "aries";
 const MY_PASS = "aries";
 
@@ -23,39 +21,39 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/tmp/uploads", express.static(uploadDir));
 
-// LOGIN API
+// LOGIN
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
-  if (username === MY_USER && password === MY_PASS) {
-    res.json({ success: true });
-  } else {
-    res.json({ success: false });
-  }
+  if (username === MY_USER && password === MY_PASS) res.json({ success: true });
+  else res.json({ success: false });
+});
+
+// FOLDER - INI YANG BIKIN TAMBAH FOLDER GAK BISA KEMARIN
+let folders = [];
+app.get("/api/folders", (req, res) => res.json(folders));
+app.post("/api/folders", (req, res) => {
+  const { name } = req.body;
+  if (!name) return res.json({ success: false });
+  const f = { id: Date.now(), name };
+  folders.push(f);
+  res.json({ success: true, folder: f });
 });
 
 let photos = [];
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
+app.get("/photos", (req, res) => res.json(photos));
 app.post("/upload", upload.single("photo"), (req, res) => {
-  if (req.file) {
+  if (req.file)
     photos.push({
       id: Date.now(),
       filename: req.file.filename,
       path: `/tmp/uploads/${req.file.filename}`,
     });
-  }
   res.redirect("/");
 });
 
-app.get("/photos", (req, res) => {
-  res.json(photos);
-});
+app.get("/", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "index.html")),
+);
 
-if (require.main === module) {
-  app.listen(3000, () => console.log("jalan"));
-}
-
+if (require.main === module) app.listen(3000, () => console.log("jalan"));
 module.exports = app;
