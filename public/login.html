@@ -104,17 +104,19 @@
     <div class="card">
       <div class="dot">◐</div>
       <h2>My Gallery</h2>
-      <div class="sub">Private • Silahkan Login Terlebih Dahulu</div>
+      <div class="sub">Silahkan Login Terlebih Dahulu</div>
       <input id="user" placeholder="Username" /><input
         id="pass"
         type="password"
         placeholder="Password"
       />
-      <button id="btnLogin">Continue →</button>
+      <button id="btnLogin">LOGIN</button>
       <div id="msg"></div>
     </div>
     <script>
-      if (location.search.includes("logout")) localStorage.clear();
+      if (location.search.includes("logout")) {
+        localStorage.removeItem("isLoggedIn");
+      }
       async function doLogin() {
         const r = await fetch("/api/login", {
           method: "POST",
