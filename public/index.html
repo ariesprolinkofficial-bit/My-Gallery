@@ -10,14 +10,9 @@
     <button id="logout" onclick="logout()">Logout</button>
     <div class="center">
       <h1>📁 My Gallery</h1>
-      <input
-        type="text"
-        id="searchFolder"
-        placeholder="🔍 Cari folder..."
-        oninput="render()"
-      />
-      <button id="btnAdd" onclick="tambahFolder()">+ Tambah Folder</button>
-      <div id="gallery"></div>
+      <input id="searchInput" placeholder="Cari folder" />
+      <button id="btnTambah">+ Tambah Folder</button>
+      <div id="folderList"></div>
     </div>
     <div id="inside">
       <div class="inside-head">
