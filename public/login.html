@@ -3,80 +3,168 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
+    <title>My Gallery — Login</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
         min-height: 100vh;
-        background: linear-gradient(#0ea5e9, #e0f2fe);
+        background: #f6f3ef;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: Arial;
+        font-family: "Inter", sans-serif;
+        position: relative;
+        overflow: hidden;
+      }
+      body::before {
+        content: "";
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle at 30% 30%,
+          #e8ddd0 0%,
+          transparent 70%
+        );
+        top: -100px;
+        left: -100px;
+      }
+      body::after {
+        content: "";
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle at 70% 70%,
+          #d6e2e0 0%,
+          transparent 70%
+        );
+        bottom: -80px;
+        right: -80px;
       }
       .card {
-        background: white;
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        width: 300px;
-        text-align: center;
+        position: relative;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        padding: 44px 36px;
+        border-radius: 28px;
+        box-shadow:
+          0 20px 60px rgba(0, 0, 0, 0.08),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        width: 360px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+      }
+      h2 {
+        font-family: "Instrument Serif", serif;
+        font-size: 28px;
+        font-weight: 400;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+        color: #1a1a1a;
+      }
+      .sub {
+        font-size: 13px;
+        color: #9a9a9a;
+        margin-bottom: 28px;
+        letter-spacing: 0.02em;
       }
       input {
-        width: 90%;
-        padding: 10px;
-        margin: 8px 0;
-        border-radius: 10px;
-        border: 1px solid #ccc;
+        width: 100%;
+        padding: 14px 16px;
+        margin: 0 0 14px;
+        border-radius: 12px;
+        border: 1px solid #e8e3dd;
+        background: #fbfaf8;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s;
+      }
+      input:focus {
+        border-color: #1a1a1a;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
       }
       button {
-        width: 95%;
-        padding: 10px;
+        width: 100%;
+        padding: 14px;
         margin-top: 10px;
-        border-radius: 10px;
+        border-radius: 12px;
         border: none;
-        background: #0ea5e9;
-        color: white;
-        font-weight: bold;
+        background: #1a1a1a;
+        color: #fff;
+        font-weight: 500;
+        font-size: 14px;
+        letter-spacing: 0.02em;
         cursor: pointer;
+        transition: 0.2s;
+      }
+      button:hover {
+        background: #000;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+      #msg {
+        font-size: 12px;
+        margin-top: 12px;
+        min-height: 16px;
+        color: #c25a5a;
+      }
+      .lock {
+        width: 36px;
+        height: 36px;
+        background: #1a1a1a;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+        font-size: 18px;
+        color: white;
       }
     </style>
   </head>
   <body>
     <div class="card">
-      <h2>🔒 My Gallery Login</h2>
+      <div class="lock">◐</div>
+      <h2>My Gallery</h2>
+      <div class="sub">Private collection — aries only</div>
       <input id="user" placeholder="Username" value="aries" /><input
         id="pass"
         type="password"
         placeholder="Password"
         value="aries"
-      /><button id="btnLogin">Login</button>
-      <p id="msg" style="color: red; font-size: 13px"></p>
+      />
+      <button id="btnLogin">Continue →</button>
+      <div id="msg"></div>
     </div>
     <script>
-      if (location.search.includes("logout")) {
-        localStorage.clear();
-      }
-      document.getElementById("btnLogin").onclick = async () => {
-        const res = await fetch("/api/login", {
+      if (location.search.includes("logout")) localStorage.clear();
+      btnLogin.onclick = async () => {
+        const r = await fetch("/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username: user.value, password: pass.value }),
         });
-        const data = await res.json();
-        if (data.success) {
+        const d = await r.json();
+        if (d.success) {
           localStorage.setItem("isLoggedIn", "true");
           location.href = "index.html";
         } else {
-          msg.textContent = "Salah - pakai aries / aries";
+          msg.textContent = "Incorrect — try aries / aries";
         }
       };
       if (
         localStorage.getItem("isLoggedIn") === "true" &&
         !location.search.includes("logout")
-      ) {
+      )
         location.href = "index.html";
-      }
     </script>
   </body>
 </html>

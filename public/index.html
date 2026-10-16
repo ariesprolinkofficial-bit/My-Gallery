@@ -4,154 +4,222 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Gallery</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
         min-height: 100vh;
-        background: linear-gradient(#0ea5e9, #e0f2fe);
-        font-family: Arial;
-        text-align: center;
-        padding-top: 30px;
+        background: #f6f3ef;
+        font-family: "Inter", sans-serif;
+        color: #1a1a1a;
       }
-      h1 {
+      .top {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: rgba(246, 243, 239, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 28px;
+        z-index: 50;
+      }
+      .logo {
+        font-family: "Instrument Serif", serif;
+        font-size: 22px;
+        letter-spacing: -0.02em;
+      }
+      .topBtn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        background: white;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s;
+      }
+      .topBtn:hover {
+        background: #1a1a1a;
         color: white;
       }
+      .wrap {
+        padding: 100px 28px 40px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
       #search {
-        width: 300px;
-        padding: 12px 20px;
-        border-radius: 25px;
-        border: none;
-        text-align: center;
+        width: 320px;
+        max-width: 100%;
+        padding: 12px 18px;
+        border-radius: 100px;
+        border: 1px solid #e8e3dd;
+        background: white;
+        font-size: 13.5px;
+        outline: none;
+      }
+      #search:focus {
+        border-color: #1a1a1a;
+      }
+      .h {
+        font-family: "Instrument Serif", serif;
+        font-size: 38px;
+        font-weight: 400;
+        margin: 24px 0 8px;
+        letter-spacing: -0.03em;
+      }
+      .sub {
+        color: #9a9a9a;
+        font-size: 13px;
+        margin-bottom: 28px;
       }
       #btnTambah {
-        margin-top: 15px;
-        padding: 8px 18px;
-        border-radius: 20px;
-        border: none;
-        background: white;
-        color: #0ea5e9;
-        font-weight: bold;
+        padding: 10px 18px;
+        border-radius: 100px;
+        border: 1px solid #1a1a1a;
+        background: #1a1a1a;
+        color: white;
+        font-size: 13px;
         cursor: pointer;
       }
       #folderList {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 30px;
-        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+        margin-top: 32px;
       }
       .folder {
         background: white;
-        padding: 20px 30px;
-        border-radius: 15px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 22px;
+        border-radius: 20px;
         cursor: pointer;
-        font-weight: bold;
-        min-width: 120px;
+        transition: 0.25s;
+        text-align: left;
+      }
+      .folder:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      }
+      .folder b {
+        font-weight: 500;
+        font-size: 14px;
+        display: block;
+        margin-top: 10px;
+      }
+      .folder span {
+        font-size: 11px;
+        color: #9a9a9a;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
       }
       #inside {
         display: none;
       }
-      #back {
-        margin: 10px;
-        padding: 6px 15px;
-        border-radius: 15px;
-        border: none;
+      .back {
+        padding: 8px 14px;
+        border-radius: 100px;
+        border: 1px solid #e8e3dd;
         background: white;
         cursor: pointer;
-        font-weight: bold;
+        font-size: 13px;
+        margin-bottom: 20px;
       }
       #photos {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 12px;
-        margin-top: 20px;
-        padding: 20px;
+        columns: 3 180px;
+        column-gap: 14px;
       }
       #photos img {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      }
-      .topBtn {
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        background: white;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        border: none;
-        font-size: 22px;
-        cursor: pointer;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-        z-index: 999;
+        width: 100%;
+        margin-bottom: 14px;
+        border-radius: 16px;
+        display: block;
+        break-inside: avoid;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
       }
       #menuBox {
         position: fixed;
-        top: 65px;
-        right: 15px;
+        top: 74px;
+        right: 28px;
         background: white;
-        border-radius: 14px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 16px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
         display: none;
         flex-direction: column;
-        z-index: 1000;
-        text-align: left;
+        z-index: 100;
+        min-width: 200px;
         overflow: hidden;
-        min-width: 190px;
       }
       #menuBox button {
-        padding: 13px 18px;
+        padding: 12px 16px;
         border: none;
         background: white;
         text-align: left;
         cursor: pointer;
-        border-bottom: 1px solid #f0f0f0;
+        font-size: 13.5px;
+        border-bottom: 1px solid #f3f0eb;
       }
       #menuBox button:hover {
-        background: #f0f8ff;
+        background: #f6f3ef;
       }
     </style>
   </head>
   <body>
-    <button id="logoutBtn" class="topBtn">⎋</button>
-    <button id="menuBtn" class="topBtn" style="display: none">⋮</button>
+    <div class="top">
+      <div class="logo">My Gallery</div>
+      <div style="display: flex; gap: 8px">
+        <button id="logoutBtn" class="topBtn" title="Logout">⎋</button
+        ><button id="menuBtn" class="topBtn" style="display: none">⋮</button>
+      </div>
+    </div>
     <div id="menuBox">
       <button id="mPilih">✓ Pilih</button
       ><button id="mPilihSemua">☑ Pilih Semua</button
-      ><button id="mTambahFoto">🖼️ Tambahkan Foto</button
-      ><button id="mTambahFolder">📁 Tambah Folder</button
-      ><button id="mHapus">🗑️ Hapus Folder</button>
+      ><button id="mTambahFoto">＋ Tambahkan Foto</button
+      ><button id="mTambahFolder">＋ Tambah Folder</button
+      ><button id="mHapus" style="color: #c25a5a">— Hapus Folder</button>
     </div>
-    <div id="outside">
-      <h1>📁 My Gallery</h1>
-      <input id="search" placeholder="🔍 Cari folder" /><br /><button
-        id="btnTambah"
-      >
-        + Tambah Folder
-      </button>
-      <div id="folderList"></div>
+
+    <div class="wrap">
+      <div id="outside">
+        <input id="search" placeholder="Search folder" />
+        <div class="h">Your folders</div>
+        <div class="sub"><span id="count">0</span> collections • private</div>
+        <button id="btnTambah">＋ New folder</button>
+        <div id="folderList"></div>
+      </div>
+      <div id="inside">
+        <button id="back" class="back">← Back</button>
+        <div class="h" id="folderName"></div>
+        <div class="sub">Drag & drop or use menu to add</div>
+        <input
+          type="file"
+          id="fileInput"
+          accept="image/*"
+          style="display: none"
+          multiple
+        />
+        <div id="photos"></div>
+      </div>
     </div>
-    <div id="inside">
-      <h1 id="folderName"></h1>
-      <button id="back">← Kembali</button><br /><br /><input
-        type="file"
-        id="fileInput"
-        accept="image/*"
-        style="display: none"
-        multiple
-      />
-      <div id="photos"></div>
-    </div>
+
     <script>
-      if (localStorage.getItem("isLoggedIn") !== "true") {
+      if (localStorage.getItem("isLoggedIn") !== "true")
         location.href = "login.html";
-      }
       let folders = JSON.parse(localStorage.getItem("myFolders") || "[]");
       let activeId = null;
       const list = document.getElementById("folderList"),
@@ -163,6 +231,7 @@
         menuBox = document.getElementById("menuBox");
       function save() {
         localStorage.setItem("myFolders", JSON.stringify(folders));
+        document.getElementById("count").textContent = folders.length;
       }
       function render() {
         list.innerHTML = "";
@@ -170,22 +239,26 @@
         folders
           .filter((f) => f.name.toLowerCase().includes(q))
           .forEach((f) => {
+            const photos = JSON.parse(
+              localStorage.getItem("photos_" + f.id) || "[]",
+            );
             const d = document.createElement("div");
             d.className = "folder";
-            d.textContent = "📁 " + f.name;
+            d.innerHTML = `<span>Folder • ${photos.length} photos</span><b>${f.name}</b>`;
             d.onclick = () => openFolder(f.id);
             list.appendChild(d);
           });
+        save();
       }
       function openFolder(id) {
         activeId = id;
-        document.getElementById("folderName").textContent =
-          "📁 " + folders.find((x) => x.id == id).name;
+        document.getElementById("folderName").textContent = folders.find(
+          (x) => x.id == id,
+        ).name;
         outside.style.display = "none";
         inside.style.display = "block";
         logoutBtn.style.display = "none";
-        menuBtn.style.display = "block";
-        menuBox.style.display = "none";
+        menuBtn.style.display = "flex";
         renderPhotos();
       }
       function renderPhotos() {
@@ -194,14 +267,14 @@
         const photos = JSON.parse(
           localStorage.getItem("photos_" + activeId) || "[]",
         );
-        if (photos.length === 0) {
+        if (!photos.length) {
           c.innerHTML =
-            "<p style='color:white'>Belum ada foto. Klik ⋮ > Tambahkan Foto</p>";
+            "<p style='color:#9a9a9a;font-size:13px'>No photos yet. Click ⋮ to add.</p>";
           return;
         }
-        photos.forEach((src) => {
+        photos.forEach((s) => {
           const img = document.createElement("img");
-          img.src = src;
+          img.src = s;
           c.appendChild(img);
         });
       }
@@ -209,28 +282,25 @@
         localStorage.removeItem("isLoggedIn");
         location.href = "login.html?logout=1";
       };
-      menuBtn.onclick = () => {
-        menuBox.style.display =
-          menuBox.style.display === "flex" ? "none" : "flex";
-      };
+      menuBtn.onclick = () =>
+        (menuBox.style.display =
+          menuBox.style.display === "flex" ? "none" : "flex");
       window.addEventListener("click", (e) => {
-        if (e.target !== menuBtn && !menuBox.contains(e.target)) {
+        if (e.target !== menuBtn && !menuBox.contains(e.target))
           menuBox.style.display = "none";
-        }
       });
-      document.getElementById("mTambahFoto").onclick = () => {
+      mTambahFoto.onclick = () => {
         menuBox.style.display = "none";
         fileInput.click();
       };
-      document.getElementById("mTambahFolder").onclick = () => {
+      mTambahFolder.onclick = () => {
         menuBox.style.display = "none";
-        const name = prompt("Nama folder baru:");
-        if (!name) return;
-        folders.push({ id: Date.now(), name: name.trim() });
+        const n = prompt("Nama folder baru:");
+        if (!n) return;
+        folders.push({ id: Date.now(), name: n.trim() });
         save();
-        alert("Folder dibuat");
       };
-      document.getElementById("mHapus").onclick = () => {
+      mHapus.onclick = () => {
         menuBox.style.display = "none";
         if (!confirm("Hapus folder ini?")) return;
         folders = folders.filter((f) => f.id != activeId);
@@ -238,23 +308,22 @@
         save();
         inside.style.display = "none";
         outside.style.display = "block";
-        logoutBtn.style.display = "block";
+        logoutBtn.style.display = "flex";
         menuBtn.style.display = "none";
         activeId = null;
         render();
       };
-      document.getElementById("mPilih").onclick = () => {
+      mPilih.onclick = () => {
         menuBox.style.display = "none";
-        alert("Mode Pilih aktif");
+        alert("Mode pilih aktif");
       };
-      document.getElementById("mPilihSemua").onclick = () => {
+      mPilihSemua.onclick = () => {
         menuBox.style.display = "none";
-        alert("Pilih Semua");
       };
-      document.getElementById("btnTambah").onclick = () => {
-        const name = prompt("Nama folder baru:");
-        if (!name) return;
-        folders.push({ id: Date.now(), name: name.trim() });
+      btnTambah.onclick = () => {
+        const n = prompt("Nama folder baru:");
+        if (!n) return;
+        folders.push({ id: Date.now(), name: n.trim() });
         save();
         render();
       };
@@ -262,9 +331,8 @@
       back.onclick = () => {
         inside.style.display = "none";
         outside.style.display = "block";
-        logoutBtn.style.display = "block";
+        logoutBtn.style.display = "flex";
         menuBtn.style.display = "none";
-        menuBox.style.display = "none";
         activeId = null;
         render();
       };
@@ -273,18 +341,19 @@
         if (!files.length) return;
         const key = "photos_" + activeId;
         let photos = JSON.parse(localStorage.getItem(key) || "[]");
-        let loaded = 0;
-        files.forEach((file) => {
+        let l = 0;
+        files.forEach((f) => {
           const r = new FileReader();
           r.onload = (ev) => {
             photos.push(ev.target.result);
-            loaded++;
-            if (loaded === files.length) {
+            l++;
+            if (l === files.length) {
               localStorage.setItem(key, JSON.stringify(photos));
               renderPhotos();
+              render();
             }
           };
-          r.readAsDataURL(file);
+          r.readAsDataURL(f);
         });
       };
       render();
