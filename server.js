@@ -100,4 +100,7 @@ app.delete("/api/folders/:id/photos", (req, res) => {
   res.json({ success: true });
 });
 
-app.listen(PORT, () => console.log(`Server Online di port ${PORT}`));
+if (require.main === module) {
+  app.listen(3000, () => console.log("Running lokal"));
+}
+module.exports = app;
