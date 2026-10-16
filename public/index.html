@@ -37,7 +37,6 @@
       .logo {
         font-family: "Instrument Serif", serif;
         font-size: 22px;
-        letter-spacing: -0.02em;
       }
       .topBtn {
         width: 38px;
@@ -70,15 +69,10 @@
         font-size: 13px;
         outline: none;
       }
-      #search::placeholder {
-        color: #777;
-      }
       .h {
         font-family: "Instrument Serif", serif;
         font-size: 40px;
-        font-weight: 400;
         margin: 26px 0 6px;
-        letter-spacing: -0.03em;
       }
       .sub {
         color: #7a7a7a;
@@ -108,10 +102,18 @@
         cursor: pointer;
         transition: 0.25s;
         text-align: left;
+        position: relative;
       }
       .folder:hover {
         transform: translateY(-3px);
         background: #222;
+      }
+      .folder b {
+        font-weight: 500;
+        font-size: 18px;
+        display: block;
+        color: #f0ede8;
+        margin-bottom: 6px;
       }
       .folder span {
         font-size: 11px;
@@ -119,12 +121,24 @@
         letter-spacing: 0.06em;
         text-transform: uppercase;
       }
-      .folder b {
-        font-weight: 400;
-        font-size: 15px;
-        display: block;
-        margin-top: 8px;
-        color: #f0ede8;
+      .renameBtn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(0, 0, 0, 0.3);
+        color: #aaa;
+        font-size: 12px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .folder:hover .renameBtn {
+        display: flex;
       }
       #inside {
         display: none;
@@ -150,6 +164,7 @@
         overflow: hidden;
         background: #1c1c1c;
         aspect-ratio: 1/1;
+        cursor: pointer;
       }
       .photoWrap img {
         width: 100%;
@@ -157,6 +172,9 @@
         object-fit: cover;
         display: block;
         transition: 0.2s;
+      }
+      .photoWrap:hover img {
+        transform: scale(1.03);
       }
       .photoWrap.selected {
         outline: 2px solid white;
@@ -183,6 +201,51 @@
         background: white;
         color: black;
       }
+      /* LIGHTBOX */
+      #lightbox {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.92);
+        backdrop-filter: blur(10px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 200;
+        padding: 20px;
+      }
+      #lightbox.show {
+        display: flex;
+      }
+      #lightbox img {
+        max-width: 92vw;
+        max-height: 88vh;
+        border-radius: 18px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+        animation: pop 0.25s ease;
+      }
+      @keyframes pop {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      #closeLight {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+      }
       #menuBox {
         position: fixed;
         top: 72px;
@@ -194,7 +257,7 @@
         display: none;
         flex-direction: column;
         z-index: 100;
-        min-width: 200px;
+        min-width: 210px;
         overflow: hidden;
       }
       #menuBox button {
@@ -251,11 +314,15 @@
       ><button id="mPilihSemua">☑ Pilih Semua</button
       ><button id="mTambahFoto">＋ Tambahkan Foto</button
       ><button id="mTambahFolder">＋ Tambah Folder</button
+      ><button id="mRename">✎ Ganti Nama Folder</button
       ><button id="mHapus" style="color: #ff8a8a">— Hapus</button>
     </div>
     <div id="barSelect">
       <span id="selCount">0 dipilih</span><button id="btnCancel">Batal</button
       ><button id="btnDeleteSel" style="background: #ff4d4d">Hapus</button>
+    </div>
+    <div id="lightbox">
+      <button id="closeLight">✕</button><img id="lightImg" src="" />
     </div>
 
     <div class="wrap">
@@ -296,7 +363,9 @@
         menuBtn = document.getElementById("menuBtn"),
         menuBox = document.getElementById("menuBox"),
         photosDiv = document.getElementById("photos"),
-        bar = document.getElementById("barSelect");
+        bar = document.getElementById("barSelect"),
+        lightbox = document.getElementById("lightbox"),
+        lightImg = document.getElementById("lightImg");
 
       function save() {
         localStorage.setItem("myFolders", JSON.stringify(folders));
@@ -313,11 +382,32 @@
             );
             const d = document.createElement("div");
             d.className = "folder";
-            d.innerHTML = `<b>${f.name}</b><span>${ph.length} photos</span>`;
-            d.onclick = () => openFolder(f.id);
+            d.innerHTML = `<b>${f.name}</b><span>${ph.length} Foto</span><div class="renameBtn">✎</div>`;
+            d.onclick = (e) => {
+              if (e.target.classList.contains("renameBtn")) return;
+              openFolder(f.id);
+            };
+            d.querySelector(".renameBtn").onclick = (e) => {
+              e.stopPropagation();
+              renameFolder(f.id);
+            };
+            d.ondblclick = (e) => {
+              e.stopPropagation();
+              renameFolder(f.id);
+            };
             list.appendChild(d);
           });
         save();
+      }
+      function renameFolder(id) {
+        const f = folders.find((x) => x.id == id);
+        const n = prompt("Ganti nama folder:", f.name);
+        if (!n || !n.trim()) return;
+        f.name = n.trim();
+        save();
+        render();
+        if (activeId == id)
+          document.getElementById("folderName").textContent = f.name;
       }
       function openFolder(id) {
         activeId = id;
@@ -339,10 +429,11 @@
         const photos = JSON.parse(
           localStorage.getItem("photos_" + activeId) || "[]",
         );
-        insideSub.textContent = photos.length + " photos";
+        insideSub.textContent =
+          photos.length + " Foto • double klik untuk perbesar";
         if (!photos.length) {
           photosDiv.innerHTML =
-            "<p style='color:#777;font-size:13px'>Belum ada foto. Klik ⋮ → Tambahkan Foto</p>";
+            "<p style='color:#777;font-size:13px'>Belum ada Foto. Klik ⋮ → Tambahkan Foto</p>";
           return;
         }
         photos.forEach((src, i) => {
@@ -364,9 +455,21 @@
             else selected.add(i);
             renderPhotos();
           };
+          // DOUBLE KLIK = PERBESAR
+          w.ondblclick = () => {
+            if (selectMode) return;
+            openLightbox(src);
+          };
           photosDiv.appendChild(w);
         });
         updateBar();
+      }
+      function openLightbox(src) {
+        lightImg.src = src;
+        lightbox.classList.add("show");
+      }
+      function closeLightbox() {
+        lightbox.classList.remove("show");
       }
       function updateBar() {
         if (!selectMode || selected.size === 0) {
@@ -387,14 +490,18 @@
         if (e.target !== menuBtn && !menuBox.contains(e.target))
           menuBox.style.display = "none";
       });
-
-      // FITUR PILIH - FIX
+      lightbox.onclick = (e) => {
+        if (e.target === lightbox || e.target === lightImg) closeLightbox();
+      };
+      closeLight.onclick = closeLightbox;
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeLightbox();
+      });
       mPilih.onclick = () => {
         menuBox.style.display = "none";
         selectMode = !selectMode;
         selected.clear();
-        if (selectMode) mPilih.textContent = "✕ Batal Pilih";
-        else mPilih.textContent = "✓ Pilih";
+        mPilih.textContent = selectMode ? "✕ Batal Pilih" : "✓ Pilih";
         renderPhotos();
       };
       mPilihSemua.onclick = () => {
@@ -421,13 +528,17 @@
         folders.push({ id: Date.now(), name: n.trim() });
         save();
       };
+      mRename.onclick = () => {
+        menuBox.style.display = "none";
+        renameFolder(activeId);
+      };
       mHapus.onclick = () => {
         menuBox.style.display = "none";
         const photos = JSON.parse(
           localStorage.getItem("photos_" + activeId) || "[]",
         );
         if (selectMode && selected.size > 0) {
-          if (!confirm("Hapus " + selected.size + " foto?")) return;
+          if (!confirm("Hapus " + selected.size + " Foto?")) return;
           const newPhotos = photos.filter((_, i) => !selected.has(i));
           localStorage.setItem("photos_" + activeId, JSON.stringify(newPhotos));
           selected.clear();
