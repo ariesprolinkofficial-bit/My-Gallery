@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>My Gallery</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <button id="logout" onclick="logout()">Logout</button>
+    <div class="center">
+      <h1>📁 My Gallery</h1>
+      <input
+        type="text"
+        id="searchFolder"
+        placeholder="🔍 Cari folder..."
+        oninput="render()"
+      />
+      <button id="btnAdd" onclick="tambahFolder()">+ Tambah Folder</button>
+      <div id="gallery"></div>
+    </div>
+    <div id="inside">
+      <div class="inside-head">
+        <button onclick="closeFolder()" id="backBtn">← Folder</button>
+        <div class="dots">
+          <button onclick="toggleMenu(event)">⋮</button>
+          <div id="menu">
+            <button onclick="modePilih()">✅ Pilih</button>
+            <button onclick="pilihSemua()">☑️ Pilih Semua</button>
+            <button onclick="tambahFoto()">🖼️ Tambahkan Foto</button>
+            <button onclick="tambahFolderDalam()">📁 Tambah Folder</button>
+            <button onclick="hapusFolder()" style="color: red">
+              🗑️ Hapus Folder
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="grid"></div>
+      <input
+        type="file"
+        id="fileInput"
+        multiple
+        accept="image/*"
+        hidden
+        onchange="upload(event)"
+      />
+      <div id="bar">
+        <span id="count"></span><button onclick="hapusTerpilih()">Hapus</button>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
