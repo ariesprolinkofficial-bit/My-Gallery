@@ -50,10 +50,6 @@
         align-items: center;
         justify-content: center;
       }
-      .topBtn:hover {
-        background: white;
-        color: black;
-      }
       .wrap {
         padding: 90px 28px 40px;
         max-width: 1200px;
@@ -69,30 +65,33 @@
         font-size: 13px;
         outline: none;
       }
-      .h {
-        font-family: "Instrument Serif", serif;
-        font-size: 40px;
-        margin: 26px 0 6px;
-      }
-      .sub {
-        color: #7a7a7a;
-        font-size: 13px;
-        margin-bottom: 24px;
-      }
       #btnTambah {
-        padding: 10px 18px;
+        padding: 10px 20px;
         border-radius: 100px;
         border: 1px solid rgba(255, 255, 255, 0.15);
         background: white;
         color: black;
         font-size: 13px;
+        font-weight: 500;
         cursor: pointer;
+      }
+      #btnTambah:hover {
+        background: #f5f3ef;
+      }
+      .sub {
+        color: #7a7a7a;
+        font-size: 13px;
+        margin-top: 8px;
+        margin-bottom: 24px;
+      }
+      .sub b {
+        color: #a8a8a8;
+        font-weight: 500;
       }
       #folderList {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 16px;
-        margin-top: 30px;
       }
       .folder {
         background: #1c1c1c;
@@ -101,18 +100,18 @@
         border-radius: 20px;
         cursor: pointer;
         transition: 0.25s;
-        text-align: left;
       }
       .folder:hover {
         transform: translateY(-3px);
         background: #222;
       }
       .folder b {
-        font-weight: 500;
         font-size: 18px;
         display: block;
-        color: #f0ede8;
         margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .folder span {
         font-size: 11px;
@@ -150,11 +149,6 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        display: block;
-        transition: 0.2s;
-      }
-      .photoWrap:hover img {
-        transform: scale(1.03);
       }
       .photoWrap.selected {
         outline: 2px solid white;
@@ -172,7 +166,6 @@
         align-items: center;
         justify-content: center;
         font-size: 12px;
-        color: white;
       }
       .photoWrap.selectMode .check {
         display: flex;
@@ -185,12 +178,10 @@
         position: fixed;
         inset: 0;
         background: rgba(0, 0, 0, 0.92);
-        backdrop-filter: blur(10px);
         display: none;
         align-items: center;
         justify-content: center;
         z-index: 200;
-        padding: 20px;
       }
       #lightbox.show {
         display: flex;
@@ -199,7 +190,6 @@
         max-width: 92vw;
         max-height: 88vh;
         border-radius: 18px;
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
       }
       #closeLight {
         position: fixed;
@@ -221,7 +211,6 @@
         background: #1e1e1e;
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 16px;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
         display: none;
         flex-direction: column;
         z-index: 100;
@@ -251,21 +240,16 @@
         color: black;
         padding: 10px 20px;
         border-radius: 100px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         display: none;
         gap: 12px;
         align-items: center;
         z-index: 90;
         font-size: 13px;
       }
-      #barSelect button {
-        padding: 6px 14px;
-        border-radius: 100px;
-        border: none;
-        background: black;
-        color: white;
-        cursor: pointer;
-        font-size: 12px;
+      .h {
+        font-family: "Instrument Serif", serif;
+        font-size: 36px;
+        margin: 0 0 6px;
       }
     </style>
   </head>
@@ -292,13 +276,15 @@
     <div id="lightbox">
       <button id="closeLight">✕</button><img id="lightImg" src="" />
     </div>
-
     <div class="wrap">
       <div id="outside">
         <input id="search" placeholder="Search folder" />
-        <div class="h">Your folders</div>
-        <div class="sub"><span id="count">0</span> collections</div>
-        <button id="btnTambah">＋ New folder</button>
+        <div style="margin-top: 26px; margin-bottom: 6px">
+          <button id="btnTambah">＋ New folder</button>
+        </div>
+        <div class="sub">
+          <b id="folderCount">0</b> Folder <b id="photoCount">0</b> Foto
+        </div>
         <div id="folderList"></div>
       </div>
       <div id="inside">
@@ -315,7 +301,6 @@
         <div id="photos"></div>
       </div>
     </div>
-
     <script>
       if (localStorage.getItem("isLoggedIn") !== "true")
         location.href = "login.html";
@@ -336,7 +321,18 @@
         lightImg = document.getElementById("lightImg");
       function save() {
         localStorage.setItem("myFolders", JSON.stringify(folders));
-        count.textContent = folders.length;
+        const totalPhotos = folders.reduce((s, f) => {
+          try {
+            return (
+              s +
+              JSON.parse(localStorage.getItem("photos_" + f.id) || "[]").length
+            );
+          } catch (e) {
+            return s;
+          }
+        }, 0);
+        document.getElementById("folderCount").textContent = folders.length;
+        document.getElementById("photoCount").textContent = totalPhotos;
       }
       function render() {
         list.innerHTML = "";
@@ -362,17 +358,14 @@
         f.name = n.trim();
         save();
         render();
-        if (activeId == id)
-          document.getElementById("folderName").textContent = f.name;
+        if (activeId == id) folderName.textContent = f.name;
       }
       function openFolder(id) {
         activeId = id;
         selectMode = false;
         selected.clear();
         updateBar();
-        document.getElementById("folderName").textContent = folders.find(
-          (x) => x.id == id,
-        ).name;
+        folderName.textContent = folders.find((x) => x.id == id).name;
         outside.style.display = "none";
         inside.style.display = "block";
         logoutBtn.style.display = "none";
@@ -389,7 +382,7 @@
           photos.length + " Foto • double klik untuk perbesar";
         if (!photos.length) {
           photosDiv.innerHTML =
-            "<p style='color:#777;font-size:13px'>Belum ada Foto. Klik ⋮ → Tambahkan Foto</p>";
+            "<p style='color:#777;font-size:13px'>Belum ada Foto.Klik ⋮ → Tambahkan Foto</p>";
           return;
         }
         photos.forEach((src, i) => {
@@ -444,9 +437,6 @@
           lightbox.classList.remove("show");
       };
       closeLight.onclick = () => lightbox.classList.remove("show");
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") lightbox.classList.remove("show");
-      });
       mPilih.onclick = () => {
         menuBox.style.display = "none";
         selectMode = !selectMode;
