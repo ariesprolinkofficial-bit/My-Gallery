@@ -49,15 +49,6 @@
         cursor: pointer;
         font-weight: bold;
         min-width: 120px;
-        position: relative;
-      }
-      .folder.selected {
-        outline: 3px solid #0ea5e9;
-      }
-      .folder input {
-        position: absolute;
-        left: 8px;
-        top: 8px;
       }
       #inside {
         display: none;
@@ -88,14 +79,14 @@
         top: 15px;
         right: 15px;
         background: white;
-        width: 38px;
-        height: 38px;
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
         border: none;
-        font-size: 20px;
+        font-size: 22px;
         cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        z-index: 100;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        z-index: 999;
       }
       #menuBox {
         position: fixed;
@@ -106,7 +97,7 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         display: none;
         flex-direction: column;
-        z-index: 101;
+        z-index: 1000;
         text-align: left;
         overflow: hidden;
       }
@@ -118,17 +109,11 @@
         cursor: pointer;
         border-bottom: 1px solid #eee;
       }
-      #menuBox button:hover {
-        background: #f0f8ff;
-      }
     </style>
   </head>
   <body>
-    <!-- DI LUAR : TOMBOL LOGOUT -->
-    <button id="logoutBtn" class="topBtn" title="Logout">⎋</button>
-    <!-- DI DALAM : TITIK 3 -->
+    <button id="logoutBtn" class="topBtn">⎋</button>
     <button id="menuBtn" class="topBtn" style="display: none">⋮</button>
-
     <div id="menuBox">
       <button id="mPilih">✓ Pilih</button>
       <button id="mPilihSemua">☑ Pilih Semua</button>
@@ -136,14 +121,12 @@
       <button id="mTambahFolder">📁 Tambah Folder</button>
       <button id="mHapus">🗑️ Hapus Folder</button>
     </div>
-
     <div id="outside">
       <h1>📁 My Gallery</h1>
       <input id="search" placeholder="🔍 Cari folder" /><br />
       <button id="btnTambah">+ Tambah Folder</button>
       <div id="folderList"></div>
     </div>
-
     <div id="inside">
       <h1 id="folderName"></h1>
       <button id="back">← Kembali</button><br /><br />
@@ -156,25 +139,21 @@
       />
       <div id="photos"></div>
     </div>
-
     <script>
       let folders = JSON.parse(localStorage.getItem("myFolders") || "[]");
       let activeId = null,
         selectMode = false;
       let selectedIds = new Set();
-
-      const list = document.getElementById("folderList");
-      const search = document.getElementById("search");
-      const outside = document.getElementById("outside");
-      const inside = document.getElementById("inside");
-      const logoutBtn = document.getElementById("logoutBtn");
-      const menuBtn = document.getElementById("menuBtn");
-      const menuBox = document.getElementById("menuBox");
-
+      const list = document.getElementById("folderList"),
+        search = document.getElementById("search"),
+        outside = document.getElementById("outside"),
+        inside = document.getElementById("inside"),
+        logoutBtn = document.getElementById("logoutBtn"),
+        menuBtn = document.getElementById("menuBtn"),
+        menuBox = document.getElementById("menuBox");
       function save() {
         localStorage.setItem("myFolders", JSON.stringify(folders));
       }
-
       function render() {
         list.innerHTML = "";
         const q = search.value.toLowerCase();
@@ -183,7 +162,6 @@
           .forEach((f) => {
             const d = document.createElement("div");
             d.className = "folder";
-            if (selectedIds.has(f.id)) d.classList.add("selected");
             d.textContent = "📁 " + f.name;
             d.onclick = () => openFolder(f.id);
             list.appendChild(d);
@@ -205,48 +183,22 @@
         const photos = JSON.parse(
           localStorage.getItem("photos_" + activeId) || "[]",
         );
-        photos.forEach((src, i) => {
-          const div = document.createElement("div");
-          div.style.position = "relative";
+        photos.forEach((src) => {
           const img = document.createElement("img");
           img.src = src;
-          // kalau mode pilih foto
-          if (selectMode) {
-            const cb = document.createElement("input");
-            cb.type = "checkbox";
-            cb.style.position = "absolute";
-            cb.style.top = "5px";
-            cb.style.left = "5px";
-            cb.checked = selectedIds.has("p_" + i);
-            cb.onchange = () => {
-              if (cb.checked) selectedIds.add("p_" + i);
-              else selectedIds.delete("p_" + i);
-            };
-            div.appendChild(cb);
-          }
-          div.appendChild(img);
-          c.appendChild(div);
+          c.appendChild(img);
         });
       }
-
-      // LOGOUT - DI LUAR FOLDER
-      logoutBtn.onclick = () => {
-        if (confirm("Mau logout?")) {
-          localStorage.removeItem("isLogin");
-          window.location.href = "login.html";
-        }
+      logoutBtn.onclick = function () {
+        console.log("logout clicked");
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = "login.html";
       };
-
-      // TITIK 3 - HANYA DI DALAM FOLDER
       menuBtn.onclick = () => {
         menuBox.style.display =
           menuBox.style.display == "flex" ? "none" : "flex";
       };
-      window.onclick = (e) => {
-        if (e.target != menuBtn && !menuBox.contains(e.target))
-          menuBox.style.display = "none";
-      };
-
       document.getElementById("mPilih").onclick = () => {
         selectMode = !selectMode;
         selectedIds.clear();
@@ -268,46 +220,26 @@
       };
       document.getElementById("mTambahFolder").onclick = () => {
         menuBox.style.display = "none";
-        const name = prompt("Nama folder baru di dalam ini?");
+        const name = prompt("Nama folder baru:");
         if (!name) return;
-        // bikin sub folder? untuk sekarang balik ke luar dan bikin folder baru
         folders.push({ id: Date.now(), name: name.trim() });
         save();
-        alert("Folder dibuat, kembali untuk lihat");
+        alert("Folder dibuat");
       };
       document.getElementById("mHapus").onclick = () => {
         menuBox.style.display = "none";
-        if (selectedIds.size == 0) {
-          if (
-            confirm(
-              "Hapus folder " +
-                folders.find((x) => x.id == activeId).name +
-                " ?",
-            )
-          ) {
-            folders = folders.filter((f) => f.id != activeId);
-            localStorage.removeItem("photos_" + activeId);
-            save();
-            inside.style.display = "none";
-            outside.style.display = "block";
-            logoutBtn.style.display = "block";
-            menuBtn.style.display = "none";
-            activeId = null;
-            render();
-          }
-          return;
+        if (confirm("Hapus folder ini?")) {
+          folders = folders.filter((f) => f.id != activeId);
+          localStorage.removeItem("photos_" + activeId);
+          save();
+          inside.style.display = "none";
+          outside.style.display = "block";
+          logoutBtn.style.display = "block";
+          menuBtn.style.display = "none";
+          activeId = null;
+          render();
         }
-        // hapus foto terpilih
-        let photos = JSON.parse(
-          localStorage.getItem("photos_" + activeId) || "[]",
-        );
-        photos = photos.filter((_, i) => !selectedIds.has("p_" + i));
-        localStorage.setItem("photos_" + activeId, JSON.stringify(photos));
-        selectedIds.clear();
-        selectMode = false;
-        renderPhotos();
       };
-
       document.getElementById("btnTambah").onclick = () => {
         const name = prompt("Nama folder baru:");
         if (!name) return;
@@ -322,8 +254,6 @@
         logoutBtn.style.display = "block";
         menuBtn.style.display = "none";
         activeId = null;
-        selectMode = false;
-        selectedIds.clear();
         render();
       };
       document.getElementById("fileInput").onchange = (e) => {
