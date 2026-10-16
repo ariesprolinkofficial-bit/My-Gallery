@@ -102,7 +102,6 @@
         cursor: pointer;
         transition: 0.25s;
         text-align: left;
-        position: relative;
       }
       .folder:hover {
         transform: translateY(-3px);
@@ -120,25 +119,6 @@
         color: #777;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-      }
-      .renameBtn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(0, 0, 0, 0.3);
-        color: #aaa;
-        font-size: 12px;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-      }
-      .folder:hover .renameBtn {
-        display: flex;
       }
       #inside {
         display: none;
@@ -201,7 +181,6 @@
         background: white;
         color: black;
       }
-      /* LIGHTBOX */
       #lightbox {
         position: fixed;
         inset: 0;
@@ -221,17 +200,6 @@
         max-height: 88vh;
         border-radius: 18px;
         box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
-        animation: pop 0.25s ease;
-      }
-      @keyframes pop {
-        from {
-          transform: scale(0.9);
-          opacity: 0;
-        }
-        to {
-          transform: scale(1);
-          opacity: 1;
-        }
       }
       #closeLight {
         position: fixed;
@@ -366,7 +334,6 @@
         bar = document.getElementById("barSelect"),
         lightbox = document.getElementById("lightbox"),
         lightImg = document.getElementById("lightImg");
-
       function save() {
         localStorage.setItem("myFolders", JSON.stringify(folders));
         count.textContent = folders.length;
@@ -382,19 +349,8 @@
             );
             const d = document.createElement("div");
             d.className = "folder";
-            d.innerHTML = `<b>${f.name}</b><span>${ph.length} Foto</span><div class="renameBtn">✎</div>`;
-            d.onclick = (e) => {
-              if (e.target.classList.contains("renameBtn")) return;
-              openFolder(f.id);
-            };
-            d.querySelector(".renameBtn").onclick = (e) => {
-              e.stopPropagation();
-              renameFolder(f.id);
-            };
-            d.ondblclick = (e) => {
-              e.stopPropagation();
-              renameFolder(f.id);
-            };
+            d.innerHTML = `<b>${f.name}</b><span>${ph.length} Foto</span>`;
+            d.onclick = () => openFolder(f.id);
             list.appendChild(d);
           });
         save();
@@ -455,21 +411,14 @@
             else selected.add(i);
             renderPhotos();
           };
-          // DOUBLE KLIK = PERBESAR
           w.ondblclick = () => {
             if (selectMode) return;
-            openLightbox(src);
+            lightImg.src = src;
+            lightbox.classList.add("show");
           };
           photosDiv.appendChild(w);
         });
         updateBar();
-      }
-      function openLightbox(src) {
-        lightImg.src = src;
-        lightbox.classList.add("show");
-      }
-      function closeLightbox() {
-        lightbox.classList.remove("show");
       }
       function updateBar() {
         if (!selectMode || selected.size === 0) {
@@ -491,11 +440,12 @@
           menuBox.style.display = "none";
       });
       lightbox.onclick = (e) => {
-        if (e.target === lightbox || e.target === lightImg) closeLightbox();
+        if (e.target === lightbox || e.target === lightImg)
+          lightbox.classList.remove("show");
       };
-      closeLight.onclick = closeLightbox;
+      closeLight.onclick = () => lightbox.classList.remove("show");
       window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeLightbox();
+        if (e.key === "Escape") lightbox.classList.remove("show");
       });
       mPilih.onclick = () => {
         menuBox.style.display = "none";

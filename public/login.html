@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Gallery — Login</title>
+    <title>Login</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500&display=swap"
       rel="stylesheet"
@@ -87,14 +87,9 @@
         font-weight: 500;
         font-size: 14px;
         cursor: pointer;
-        transition: 0.2s;
       }
       button:hover {
         background: white;
-        transform: translateY(-1px);
-      }
-      button:active {
-        transform: translateY(0);
       }
       #msg {
         color: #ff7a7a;
@@ -121,32 +116,27 @@
     <script>
       if (location.search.includes("logout")) localStorage.clear();
       async function doLogin() {
-        const u = document.getElementById("user"),
-          p = document.getElementById("pass"),
-          msg = document.getElementById("msg");
-        msg.textContent = "Loading...";
         const r = await fetch("/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: u.value, password: p.value }),
+          body: JSON.stringify({ username: user.value, password: pass.value }),
         });
         const d = await r.json();
         if (d.success) {
           localStorage.setItem("isLoggedIn", "true");
           location.href = "index.html";
         } else {
-          msg.textContent = "Username / Password salah — pakai aries / aries";
+          msg.textContent = "Username / Password salah";
         }
       }
-      document.getElementById("btnLogin").onclick = doLogin;
-      // FITUR ENTER — BARU
-      document.getElementById("user").addEventListener("keydown", (e) => {
+      btnLogin.onclick = doLogin;
+      user.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
           doLogin();
         }
       });
-      document.getElementById("pass").addEventListener("keydown", (e) => {
+      pass.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
           doLogin();
