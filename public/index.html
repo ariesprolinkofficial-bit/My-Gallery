@@ -1,48 +1,101 @@
 <!doctype html>
-<html lang="id">
+<html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Gallery</title>
-    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(#0ea5e9, #e0f2fe);
+        font-family: Arial;
+        text-align: center;
+        padding-top: 60px;
+      }
+      h1 {
+        color: white;
+      }
+      #search {
+        width: 300px;
+        padding: 12px 20px;
+        border-radius: 25px;
+        border: none;
+        outline: none;
+        text-align: center;
+      }
+      #btnTambah {
+        margin-top: 15px;
+        padding: 8px 18px;
+        border-radius: 20px;
+        border: none;
+        background: white;
+        color: #0ea5e9;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      #folderList {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
+        padding: 20px;
+      }
+      .folder {
+        background: white;
+        padding: 20px 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        font-weight: bold;
+        min-width: 120px;
+      }
+    </style>
   </head>
   <body>
-    <button id="logout" onclick="logout()">Logout</button>
-    <div class="center">
-      <h1>📁 My Gallery</h1>
-      <input id="searchInput" placeholder="Cari folder" />
-      <button id="btnTambah">+ Tambah Folder</button>
-      <div id="folderList"></div>
-    </div>
-    <div id="inside">
-      <div class="inside-head">
-        <button onclick="closeFolder()" id="backBtn">← Folder</button>
-        <div class="dots">
-          <button onclick="toggleMenu(event)">⋮</button>
-          <div id="menu">
-            <button onclick="modePilih()">✅ Pilih</button>
-            <button onclick="pilihSemua()">☑️ Pilih Semua</button>
-            <button onclick="tambahFoto()">🖼️ Tambahkan Foto</button>
-            <button onclick="tambahFolderDalam()">📁 Tambah Folder</button>
-            <button onclick="hapusFolder()" style="color: red">
-              🗑️ Hapus Folder
-            </button>
-          </div>
-        </div>
-      </div>
-      <div id="grid"></div>
-      <input
-        type="file"
-        id="fileInput"
-        multiple
-        accept="image/*"
-        hidden
-        onchange="upload(event)"
-      />
-      <div id="bar">
-        <span id="count"></span><button onclick="hapusTerpilih()">Hapus</button>
-      </div>
-    </div>
-    <script src="script.js"></script>
+    <h1>📁 My Gallery</h1>
+    <input id="search" placeholder="🔍 Cari folder" />
+    <br />
+    <button id="btnTambah">+ Tambah Folder</button>
+    <div id="folderList"></div>
+
+    <script>
+      let folders = JSON.parse(localStorage.getItem("myFolders") || "[]");
+      const list = document.getElementById("folderList");
+      const search = document.getElementById("search");
+      const btn = document.getElementById("btnTambah");
+
+      function save() {
+        localStorage.setItem("myFolders", JSON.stringify(folders));
+      }
+
+      function render() {
+        list.innerHTML = "";
+        const q = search.value.toLowerCase();
+        folders
+          .filter((f) => f.name.toLowerCase().includes(q))
+          .forEach((f) => {
+            const d = document.createElement("div");
+            d.className = "folder";
+            d.textContent = "📁 " + f.name;
+            d.onclick = () => {
+              alert("Buka folder: " + f.name);
+            };
+            list.appendChild(d);
+          });
+      }
+
+      btn.onclick = () => {
+        const name = prompt("Nama folder baru:");
+        if (!name) return;
+        folders.push({ id: Date.now(), name: name.trim() });
+        save();
+        render();
+      };
+
+      search.oninput = render;
+      render();
+    </script>
   </body>
 </html>
