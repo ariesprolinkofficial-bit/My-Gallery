@@ -15,9 +15,9 @@
       body {
         margin: 0;
         min-height: 100vh;
-        background: #f6f3ef;
+        background: #0f0f0f;
+        color: #f5f3ef;
         font-family: "Inter", sans-serif;
-        color: #1a1a1a;
       }
       .top {
         position: fixed;
@@ -25,9 +25,9 @@
         left: 0;
         right: 0;
         height: 64px;
-        background: rgba(246, 243, 239, 0.8);
+        background: rgba(15, 15, 15, 0.85);
         backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -40,58 +40,57 @@
         letter-spacing: -0.02em;
       }
       .topBtn {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        background: white;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #1c1c1c;
+        color: white;
         cursor: pointer;
-        font-size: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: 0.2s;
       }
       .topBtn:hover {
-        background: #1a1a1a;
-        color: white;
+        background: white;
+        color: black;
       }
       .wrap {
-        padding: 100px 28px 40px;
-        max-width: 1100px;
+        padding: 90px 28px 40px;
+        max-width: 1200px;
         margin: 0 auto;
       }
       #search {
         width: 320px;
-        max-width: 100%;
-        padding: 12px 18px;
+        padding: 11px 18px;
         border-radius: 100px;
-        border: 1px solid #e8e3dd;
-        background: white;
-        font-size: 13.5px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #1c1c1c;
+        color: white;
+        font-size: 13px;
         outline: none;
       }
-      #search:focus {
-        border-color: #1a1a1a;
+      #search::placeholder {
+        color: #777;
       }
       .h {
         font-family: "Instrument Serif", serif;
-        font-size: 38px;
+        font-size: 40px;
         font-weight: 400;
-        margin: 24px 0 8px;
+        margin: 26px 0 6px;
         letter-spacing: -0.03em;
       }
       .sub {
-        color: #9a9a9a;
+        color: #7a7a7a;
         font-size: 13px;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
       }
       #btnTambah {
         padding: 10px 18px;
         border-radius: 100px;
-        border: 1px solid #1a1a1a;
-        background: #1a1a1a;
-        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: white;
+        color: black;
         font-size: 13px;
         cursor: pointer;
       }
@@ -99,12 +98,12 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 16px;
-        margin-top: 32px;
+        margin-top: 30px;
       }
       .folder {
-        background: white;
-        border: 1px solid rgba(0, 0, 0, 0.06);
-        padding: 22px;
+        background: #1c1c1c;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        padding: 20px;
         border-radius: 20px;
         cursor: pointer;
         transition: 0.25s;
@@ -112,52 +111,86 @@
       }
       .folder:hover {
         transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-      }
-      .folder b {
-        font-weight: 500;
-        font-size: 14px;
-        display: block;
-        margin-top: 10px;
+        background: #222;
       }
       .folder span {
         font-size: 11px;
-        color: #9a9a9a;
-        letter-spacing: 0.05em;
+        color: #777;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
+      }
+      .folder b {
+        font-weight: 400;
+        font-size: 15px;
+        display: block;
+        margin-top: 8px;
+        color: #f0ede8;
       }
       #inside {
         display: none;
       }
       .back {
-        padding: 8px 14px;
+        padding: 8px 16px;
         border-radius: 100px;
-        border: 1px solid #e8e3dd;
-        background: white;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #1c1c1c;
+        color: white;
         cursor: pointer;
         font-size: 13px;
-        margin-bottom: 20px;
       }
       #photos {
-        columns: 3 180px;
-        column-gap: 14px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 14px;
+        margin-top: 24px;
       }
-      #photos img {
-        width: 100%;
-        margin-bottom: 14px;
+      .photoWrap {
+        position: relative;
         border-radius: 16px;
+        overflow: hidden;
+        background: #1c1c1c;
+        aspect-ratio: 1/1;
+      }
+      .photoWrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
         display: block;
-        break-inside: avoid;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+        transition: 0.2s;
+      }
+      .photoWrap.selected {
+        outline: 2px solid white;
+      }
+      .check {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 1.5px solid white;
+        background: rgba(0, 0, 0, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: white;
+      }
+      .photoWrap.selectMode .check {
+        display: flex;
+      }
+      .photoWrap.selected .check {
+        background: white;
+        color: black;
       }
       #menuBox {
         position: fixed;
-        top: 74px;
+        top: 72px;
         right: 28px;
-        background: white;
-        border: 1px solid rgba(0, 0, 0, 0.06);
+        background: #1e1e1e;
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 16px;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
         display: none;
         flex-direction: column;
         z-index: 100;
@@ -167,14 +200,41 @@
       #menuBox button {
         padding: 12px 16px;
         border: none;
-        background: white;
+        background: #1e1e1e;
+        color: #ddd;
         text-align: left;
         cursor: pointer;
         font-size: 13.5px;
-        border-bottom: 1px solid #f3f0eb;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       }
       #menuBox button:hover {
-        background: #f6f3ef;
+        background: #262626;
+        color: white;
+      }
+      #barSelect {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        color: black;
+        padding: 10px 20px;
+        border-radius: 100px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        display: none;
+        gap: 12px;
+        align-items: center;
+        z-index: 90;
+        font-size: 13px;
+      }
+      #barSelect button {
+        padding: 6px 14px;
+        border-radius: 100px;
+        border: none;
+        background: black;
+        color: white;
+        cursor: pointer;
+        font-size: 12px;
       }
     </style>
   </head>
@@ -182,7 +242,7 @@
     <div class="top">
       <div class="logo">My Gallery</div>
       <div style="display: flex; gap: 8px">
-        <button id="logoutBtn" class="topBtn" title="Logout">⎋</button
+        <button id="logoutBtn" class="topBtn">⎋</button
         ><button id="menuBtn" class="topBtn" style="display: none">⋮</button>
       </div>
     </div>
@@ -191,21 +251,25 @@
       ><button id="mPilihSemua">☑ Pilih Semua</button
       ><button id="mTambahFoto">＋ Tambahkan Foto</button
       ><button id="mTambahFolder">＋ Tambah Folder</button
-      ><button id="mHapus" style="color: #c25a5a">— Hapus Folder</button>
+      ><button id="mHapus" style="color: #ff8a8a">— Hapus</button>
+    </div>
+    <div id="barSelect">
+      <span id="selCount">0 dipilih</span><button id="btnCancel">Batal</button
+      ><button id="btnDeleteSel" style="background: #ff4d4d">Hapus</button>
     </div>
 
     <div class="wrap">
       <div id="outside">
         <input id="search" placeholder="Search folder" />
         <div class="h">Your folders</div>
-        <div class="sub"><span id="count">0</span> collections • private</div>
+        <div class="sub"><span id="count">0</span> collections</div>
         <button id="btnTambah">＋ New folder</button>
         <div id="folderList"></div>
       </div>
       <div id="inside">
         <button id="back" class="back">← Back</button>
         <div class="h" id="folderName"></div>
-        <div class="sub">Drag & drop or use menu to add</div>
+        <div class="sub" id="insideSub"></div>
         <input
           type="file"
           id="fileInput"
@@ -221,17 +285,22 @@
       if (localStorage.getItem("isLoggedIn") !== "true")
         location.href = "login.html";
       let folders = JSON.parse(localStorage.getItem("myFolders") || "[]");
-      let activeId = null;
+      let activeId = null,
+        selectMode = false,
+        selected = new Set();
       const list = document.getElementById("folderList"),
         search = document.getElementById("search"),
         outside = document.getElementById("outside"),
         inside = document.getElementById("inside"),
         logoutBtn = document.getElementById("logoutBtn"),
         menuBtn = document.getElementById("menuBtn"),
-        menuBox = document.getElementById("menuBox");
+        menuBox = document.getElementById("menuBox"),
+        photosDiv = document.getElementById("photos"),
+        bar = document.getElementById("barSelect");
+
       function save() {
         localStorage.setItem("myFolders", JSON.stringify(folders));
-        document.getElementById("count").textContent = folders.length;
+        count.textContent = folders.length;
       }
       function render() {
         list.innerHTML = "";
@@ -239,12 +308,12 @@
         folders
           .filter((f) => f.name.toLowerCase().includes(q))
           .forEach((f) => {
-            const photos = JSON.parse(
+            const ph = JSON.parse(
               localStorage.getItem("photos_" + f.id) || "[]",
             );
             const d = document.createElement("div");
             d.className = "folder";
-            d.innerHTML = `<span>Folder • ${photos.length} photos</span><b>${f.name}</b>`;
+            d.innerHTML = `<span>${ph.length} photos</span><b>${f.name}</b>`;
             d.onclick = () => openFolder(f.id);
             list.appendChild(d);
           });
@@ -252,6 +321,9 @@
       }
       function openFolder(id) {
         activeId = id;
+        selectMode = false;
+        selected.clear();
+        updateBar();
         document.getElementById("folderName").textContent = folders.find(
           (x) => x.id == id,
         ).name;
@@ -259,24 +331,50 @@
         inside.style.display = "block";
         logoutBtn.style.display = "none";
         menuBtn.style.display = "flex";
+        menuBox.style.display = "none";
         renderPhotos();
       }
       function renderPhotos() {
-        const c = document.getElementById("photos");
-        c.innerHTML = "";
+        photosDiv.innerHTML = "";
         const photos = JSON.parse(
           localStorage.getItem("photos_" + activeId) || "[]",
         );
+        insideSub.textContent = photos.length + " photos";
         if (!photos.length) {
-          c.innerHTML =
-            "<p style='color:#9a9a9a;font-size:13px'>No photos yet. Click ⋮ to add.</p>";
+          photosDiv.innerHTML =
+            "<p style='color:#777;font-size:13px'>Belum ada foto. Klik ⋮ → Tambahkan Foto</p>";
           return;
         }
-        photos.forEach((s) => {
+        photos.forEach((src, i) => {
+          const w = document.createElement("div");
+          w.className =
+            "photoWrap" +
+            (selectMode ? " selectMode" : "") +
+            (selected.has(i) ? " selected" : "");
           const img = document.createElement("img");
-          img.src = s;
-          c.appendChild(img);
+          img.src = src;
+          const chk = document.createElement("div");
+          chk.className = "check";
+          chk.textContent = selected.has(i) ? "✓" : "";
+          w.appendChild(img);
+          w.appendChild(chk);
+          w.onclick = () => {
+            if (!selectMode) return;
+            if (selected.has(i)) selected.delete(i);
+            else selected.add(i);
+            renderPhotos();
+          };
+          photosDiv.appendChild(w);
         });
+        updateBar();
+      }
+      function updateBar() {
+        if (!selectMode || selected.size === 0) {
+          bar.style.display = "none";
+          return;
+        }
+        bar.style.display = "flex";
+        selCount.textContent = selected.size + " dipilih";
       }
       logoutBtn.onclick = () => {
         localStorage.removeItem("isLoggedIn");
@@ -289,6 +387,29 @@
         if (e.target !== menuBtn && !menuBox.contains(e.target))
           menuBox.style.display = "none";
       });
+
+      // FITUR PILIH - FIX
+      mPilih.onclick = () => {
+        menuBox.style.display = "none";
+        selectMode = !selectMode;
+        selected.clear();
+        if (selectMode) mPilih.textContent = "✕ Batal Pilih";
+        else mPilih.textContent = "✓ Pilih";
+        renderPhotos();
+      };
+      mPilihSemua.onclick = () => {
+        menuBox.style.display = "none";
+        const photos = JSON.parse(
+          localStorage.getItem("photos_" + activeId) || "[]",
+        );
+        if (!selectMode) {
+          selectMode = true;
+          mPilih.textContent = "✕ Batal Pilih";
+        }
+        if (selected.size === photos.length) selected.clear();
+        else photos.forEach((_, i) => selected.add(i));
+        renderPhotos();
+      };
       mTambahFoto.onclick = () => {
         menuBox.style.display = "none";
         fileInput.click();
@@ -302,24 +423,46 @@
       };
       mHapus.onclick = () => {
         menuBox.style.display = "none";
-        if (!confirm("Hapus folder ini?")) return;
-        folders = folders.filter((f) => f.id != activeId);
-        localStorage.removeItem("photos_" + activeId);
-        save();
-        inside.style.display = "none";
-        outside.style.display = "block";
-        logoutBtn.style.display = "flex";
-        menuBtn.style.display = "none";
-        activeId = null;
-        render();
+        const photos = JSON.parse(
+          localStorage.getItem("photos_" + activeId) || "[]",
+        );
+        if (selectMode && selected.size > 0) {
+          if (!confirm("Hapus " + selected.size + " foto?")) return;
+          const newPhotos = photos.filter((_, i) => !selected.has(i));
+          localStorage.setItem("photos_" + activeId, JSON.stringify(newPhotos));
+          selected.clear();
+          selectMode = false;
+          mPilih.textContent = "✓ Pilih";
+          renderPhotos();
+          render();
+        } else {
+          if (
+            !confirm(
+              "Hapus folder '" +
+                folders.find((x) => x.id == activeId).name +
+                "' ?",
+            )
+          )
+            return;
+          folders = folders.filter((f) => f.id != activeId);
+          localStorage.removeItem("photos_" + activeId);
+          save();
+          inside.style.display = "none";
+          outside.style.display = "block";
+          logoutBtn.style.display = "flex";
+          menuBtn.style.display = "none";
+          bar.style.display = "none";
+          activeId = null;
+          render();
+        }
       };
-      mPilih.onclick = () => {
-        menuBox.style.display = "none";
-        alert("Mode pilih aktif");
+      btnCancel.onclick = () => {
+        selectMode = false;
+        selected.clear();
+        mPilih.textContent = "✓ Pilih";
+        renderPhotos();
       };
-      mPilihSemua.onclick = () => {
-        menuBox.style.display = "none";
-      };
+      btnDeleteSel.onclick = () => mHapus.click();
       btnTambah.onclick = () => {
         const n = prompt("Nama folder baru:");
         if (!n) return;
@@ -333,6 +476,11 @@
         outside.style.display = "block";
         logoutBtn.style.display = "flex";
         menuBtn.style.display = "none";
+        menuBox.style.display = "none";
+        bar.style.display = "none";
+        selectMode = false;
+        selected.clear();
+        mPilih.textContent = "✓ Pilih";
         activeId = null;
         render();
       };
@@ -340,15 +488,15 @@
         const files = [...e.target.files];
         if (!files.length) return;
         const key = "photos_" + activeId;
-        let photos = JSON.parse(localStorage.getItem(key) || "[]");
+        let ph = JSON.parse(localStorage.getItem(key) || "[]");
         let l = 0;
         files.forEach((f) => {
           const r = new FileReader();
           r.onload = (ev) => {
-            photos.push(ev.target.result);
+            ph.push(ev.target.result);
             l++;
             if (l === files.length) {
-              localStorage.setItem(key, JSON.stringify(photos));
+              localStorage.setItem(key, JSON.stringify(ph));
               renderPhotos();
               render();
             }
