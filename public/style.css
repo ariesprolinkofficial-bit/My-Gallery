@@ -59,13 +59,18 @@ body {
   gap: 18px;
   justify-content: center;
 }
-.folder {
-  background: #fff;
-  border-radius: 20px;
-  padding: 26px 10px;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+.folder b {
+  font-weight: 500;
+  font-size: 18px;
+  display: block;
+  color: #f0ede8;
+  margin-bottom: 6px;
+}
+.folder span {
+  font-size: 11px;
+  color: #777;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 .folder .ic {
   font-size: 42px;

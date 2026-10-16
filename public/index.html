@@ -313,7 +313,7 @@
             );
             const d = document.createElement("div");
             d.className = "folder";
-            d.innerHTML = `<span>${ph.length} photos</span><b>${f.name}</b>`;
+            d.innerHTML = `<b>${f.name}</b><span>${ph.length} photos</span>`;
             d.onclick = () => openFolder(f.id);
             list.appendChild(d);
           });
