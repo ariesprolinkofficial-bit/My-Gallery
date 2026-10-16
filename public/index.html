@@ -60,54 +60,61 @@
         border: none;
         background: white;
         cursor: pointer;
+        font-weight: bold;
       }
       #photos {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 10px;
+        gap: 12px;
         margin-top: 20px;
+        padding: 20px;
       }
       #photos img {
         width: 150px;
         height: 150px;
         object-fit: cover;
-        border-radius: 10px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
       }
       .topBtn {
         position: fixed;
         top: 15px;
         right: 15px;
         background: white;
-        width: 42px;
-        height: 42px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
         border: none;
         font-size: 22px;
         cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
         z-index: 999;
       }
       #menuBox {
         position: fixed;
-        top: 60px;
+        top: 65px;
         right: 15px;
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        border-radius: 14px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         display: none;
         flex-direction: column;
         z-index: 1000;
         text-align: left;
         overflow: hidden;
+        min-width: 190px;
       }
       #menuBox button {
-        padding: 12px 18px;
+        padding: 13px 18px;
         border: none;
         background: white;
         text-align: left;
         cursor: pointer;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      #menuBox button:hover {
+        background: #f0f8ff;
       }
     </style>
   </head>
@@ -115,22 +122,24 @@
     <button id="logoutBtn" class="topBtn">⎋</button>
     <button id="menuBtn" class="topBtn" style="display: none">⋮</button>
     <div id="menuBox">
-      <button id="mPilih">✓ Pilih</button>
-      <button id="mPilihSemua">☑ Pilih Semua</button>
-      <button id="mTambahFoto">🖼️ Tambahkan Foto</button>
-      <button id="mTambahFolder">📁 Tambah Folder</button>
-      <button id="mHapus">🗑️ Hapus Folder</button>
+      <button id="mPilih">✓ Pilih</button
+      ><button id="mPilihSemua">☑ Pilih Semua</button
+      ><button id="mTambahFoto">🖼️ Tambahkan Foto</button
+      ><button id="mTambahFolder">📁 Tambah Folder</button
+      ><button id="mHapus">🗑️ Hapus Folder</button>
     </div>
     <div id="outside">
       <h1>📁 My Gallery</h1>
-      <input id="search" placeholder="🔍 Cari folder" /><br />
-      <button id="btnTambah">+ Tambah Folder</button>
+      <input id="search" placeholder="🔍 Cari folder" /><br /><button
+        id="btnTambah"
+      >
+        + Tambah Folder
+      </button>
       <div id="folderList"></div>
     </div>
     <div id="inside">
       <h1 id="folderName"></h1>
-      <button id="back">← Kembali</button><br /><br />
-      <input
+      <button id="back">← Kembali</button><br /><br /><input
         type="file"
         id="fileInput"
         accept="image/*"
@@ -140,10 +149,11 @@
       <div id="photos"></div>
     </div>
     <script>
+      if (localStorage.getItem("isLoggedIn") !== "true") {
+        location.href = "login.html";
+      }
       let folders = JSON.parse(localStorage.getItem("myFolders") || "[]");
-      let activeId = null,
-        selectMode = false;
-      let selectedIds = new Set();
+      let activeId = null;
       const list = document.getElementById("folderList"),
         search = document.getElementById("search"),
         outside = document.getElementById("outside"),
@@ -175,6 +185,7 @@
         inside.style.display = "block";
         logoutBtn.style.display = "none";
         menuBtn.style.display = "block";
+        menuBox.style.display = "none";
         renderPhotos();
       }
       function renderPhotos() {
@@ -183,40 +194,33 @@
         const photos = JSON.parse(
           localStorage.getItem("photos_" + activeId) || "[]",
         );
+        if (photos.length === 0) {
+          c.innerHTML =
+            "<p style='color:white'>Belum ada foto. Klik ⋮ > Tambahkan Foto</p>";
+          return;
+        }
         photos.forEach((src) => {
           const img = document.createElement("img");
           img.src = src;
           c.appendChild(img);
         });
       }
-      logoutBtn.onclick = function () {
-        console.log("logout clicked");
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.href = "login.html";
+      logoutBtn.onclick = () => {
+        localStorage.removeItem("isLoggedIn");
+        location.href = "login.html?logout=1";
       };
       menuBtn.onclick = () => {
         menuBox.style.display =
-          menuBox.style.display == "flex" ? "none" : "flex";
+          menuBox.style.display === "flex" ? "none" : "flex";
       };
-      document.getElementById("mPilih").onclick = () => {
-        selectMode = !selectMode;
-        selectedIds.clear();
-        menuBox.style.display = "none";
-        renderPhotos();
-      };
-      document.getElementById("mPilihSemua").onclick = () => {
-        selectMode = true;
-        menuBox.style.display = "none";
-        const photos = JSON.parse(
-          localStorage.getItem("photos_" + activeId) || "[]",
-        );
-        photos.forEach((_, i) => selectedIds.add("p_" + i));
-        renderPhotos();
-      };
+      window.addEventListener("click", (e) => {
+        if (e.target !== menuBtn && !menuBox.contains(e.target)) {
+          menuBox.style.display = "none";
+        }
+      });
       document.getElementById("mTambahFoto").onclick = () => {
         menuBox.style.display = "none";
-        document.getElementById("fileInput").click();
+        fileInput.click();
       };
       document.getElementById("mTambahFolder").onclick = () => {
         menuBox.style.display = "none";
@@ -228,17 +232,24 @@
       };
       document.getElementById("mHapus").onclick = () => {
         menuBox.style.display = "none";
-        if (confirm("Hapus folder ini?")) {
-          folders = folders.filter((f) => f.id != activeId);
-          localStorage.removeItem("photos_" + activeId);
-          save();
-          inside.style.display = "none";
-          outside.style.display = "block";
-          logoutBtn.style.display = "block";
-          menuBtn.style.display = "none";
-          activeId = null;
-          render();
-        }
+        if (!confirm("Hapus folder ini?")) return;
+        folders = folders.filter((f) => f.id != activeId);
+        localStorage.removeItem("photos_" + activeId);
+        save();
+        inside.style.display = "none";
+        outside.style.display = "block";
+        logoutBtn.style.display = "block";
+        menuBtn.style.display = "none";
+        activeId = null;
+        render();
+      };
+      document.getElementById("mPilih").onclick = () => {
+        menuBox.style.display = "none";
+        alert("Mode Pilih aktif");
+      };
+      document.getElementById("mPilihSemua").onclick = () => {
+        menuBox.style.display = "none";
+        alert("Pilih Semua");
       };
       document.getElementById("btnTambah").onclick = () => {
         const name = prompt("Nama folder baru:");
@@ -248,15 +259,16 @@
         render();
       };
       search.oninput = render;
-      document.getElementById("back").onclick = () => {
+      back.onclick = () => {
         inside.style.display = "none";
         outside.style.display = "block";
         logoutBtn.style.display = "block";
         menuBtn.style.display = "none";
+        menuBox.style.display = "none";
         activeId = null;
         render();
       };
-      document.getElementById("fileInput").onchange = (e) => {
+      fileInput.onchange = (e) => {
         const files = [...e.target.files];
         if (!files.length) return;
         const key = "photos_" + activeId;
@@ -267,7 +279,7 @@
           r.onload = (ev) => {
             photos.push(ev.target.result);
             loaded++;
-            if (loaded == files.length) {
+            if (loaded === files.length) {
               localStorage.setItem(key, JSON.stringify(photos));
               renderPhotos();
             }

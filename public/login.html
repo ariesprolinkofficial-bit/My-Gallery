@@ -1,27 +1,82 @@
 <!doctype html>
-<html lang="id">
+<html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-    <link rel="stylesheet" href="login.css" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(#0ea5e9, #e0f2fe);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial;
+      }
+      .card {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        width: 300px;
+        text-align: center;
+      }
+      input {
+        width: 90%;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+      }
+      button {
+        width: 95%;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 10px;
+        border: none;
+        background: #0ea5e9;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
-    <h1 class="welcome">WELCOME</h1>
     <div class="card">
-      <h2>🔒 Login</h2>
-      <input id="username" type="text" placeholder="Username" />
-      <input id="password" type="password" placeholder="Password" />
-      <div
-        id="error"
-        style="color: #ffdddd; font-size: 12px; margin: 6px 0"
-      ></div>
-      <button onclick="login()">Masuk</button>
-      <small
-        style="color: #ddd; display: block; margin-top: 12px; font-size: 11px"
-        >@ariesprolinkofficial</small
-      >
+      <h2>🔒 My Gallery Login</h2>
+      <input id="user" placeholder="Username" value="aries" /><input
+        id="pass"
+        type="password"
+        placeholder="Password"
+        value="aries"
+      /><button id="btnLogin">Login</button>
+      <p id="msg" style="color: red; font-size: 13px"></p>
     </div>
-    <script src="login.js"></script>
+    <script>
+      if (location.search.includes("logout")) {
+        localStorage.clear();
+      }
+      document.getElementById("btnLogin").onclick = async () => {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: user.value, password: pass.value }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem("isLoggedIn", "true");
+          location.href = "index.html";
+        } else {
+          msg.textContent = "Salah - pakai aries / aries";
+        }
+      };
+      if (
+        localStorage.getItem("isLoggedIn") === "true" &&
+        !location.search.includes("logout")
+      ) {
+        location.href = "index.html";
+      }
+    </script>
   </body>
 </html>
