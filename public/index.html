@@ -83,9 +83,7 @@
         object-fit: cover;
         border-radius: 10px;
       }
-
-      /* TITIK 3 POJOK KANAN ATAS */
-      #menuBtn {
+      .topBtn {
         position: fixed;
         top: 15px;
         right: 15px;
@@ -94,7 +92,7 @@
         height: 38px;
         border-radius: 50%;
         border: none;
-        font-size: 22px;
+        font-size: 20px;
         cursor: pointer;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         z-index: 100;
@@ -108,9 +106,9 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         display: none;
         flex-direction: column;
-        overflow: hidden;
         z-index: 101;
         text-align: left;
+        overflow: hidden;
       }
       #menuBox button {
         padding: 12px 18px;
@@ -126,7 +124,11 @@
     </style>
   </head>
   <body>
-    <button id="menuBtn">⋮</button>
+    <!-- DI LUAR : TOMBOL LOGOUT -->
+    <button id="logoutBtn" class="topBtn" title="Logout">⎋</button>
+    <!-- DI DALAM : TITIK 3 -->
+    <button id="menuBtn" class="topBtn" style="display: none">⋮</button>
+
     <div id="menuBox">
       <button id="mPilih">✓ Pilih</button>
       <button id="mPilihSemua">☑ Pilih Semua</button>
@@ -150,20 +152,22 @@
         id="fileInput"
         accept="image/*"
         style="display: none"
+        multiple
       />
       <div id="photos"></div>
     </div>
 
     <script>
       let folders = JSON.parse(localStorage.getItem("myFolders") || "[]");
-      let activeId = null;
-      let selectMode = false;
+      let activeId = null,
+        selectMode = false;
       let selectedIds = new Set();
 
       const list = document.getElementById("folderList");
       const search = document.getElementById("search");
       const outside = document.getElementById("outside");
       const inside = document.getElementById("inside");
+      const logoutBtn = document.getElementById("logoutBtn");
       const menuBtn = document.getElementById("menuBtn");
       const menuBox = document.getElementById("menuBox");
 
@@ -181,34 +185,18 @@
             d.className = "folder";
             if (selectedIds.has(f.id)) d.classList.add("selected");
             d.textContent = "📁 " + f.name;
-            if (selectMode) {
-              const cb = document.createElement("input");
-              cb.type = "checkbox";
-              cb.checked = selectedIds.has(f.id);
-              cb.onclick = (e) => {
-                e.stopPropagation();
-                toggleSelect(f.id);
-              };
-              d.prepend(cb);
-              d.onclick = () => toggleSelect(f.id);
-            } else {
-              d.onclick = () => openFolder(f.id);
-            }
+            d.onclick = () => openFolder(f.id);
             list.appendChild(d);
           });
       }
-      function toggleSelect(id) {
-        if (selectedIds.has(id)) selectedIds.delete(id);
-        else selectedIds.add(id);
-        render();
-      }
       function openFolder(id) {
-        if (selectMode) return toggleSelect(id);
         activeId = id;
         document.getElementById("folderName").textContent =
           "📁 " + folders.find((x) => x.id == id).name;
         outside.style.display = "none";
         inside.style.display = "block";
+        logoutBtn.style.display = "none";
+        menuBtn.style.display = "block";
         renderPhotos();
       }
       function renderPhotos() {
@@ -217,14 +205,39 @@
         const photos = JSON.parse(
           localStorage.getItem("photos_" + activeId) || "[]",
         );
-        photos.forEach((src) => {
+        photos.forEach((src, i) => {
+          const div = document.createElement("div");
+          div.style.position = "relative";
           const img = document.createElement("img");
           img.src = src;
-          c.appendChild(img);
+          // kalau mode pilih foto
+          if (selectMode) {
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.style.position = "absolute";
+            cb.style.top = "5px";
+            cb.style.left = "5px";
+            cb.checked = selectedIds.has("p_" + i);
+            cb.onchange = () => {
+              if (cb.checked) selectedIds.add("p_" + i);
+              else selectedIds.delete("p_" + i);
+            };
+            div.appendChild(cb);
+          }
+          div.appendChild(img);
+          c.appendChild(div);
         });
       }
 
-      // MENU TITIK 3
+      // LOGOUT - DI LUAR FOLDER
+      logoutBtn.onclick = () => {
+        if (confirm("Mau logout?")) {
+          localStorage.removeItem("isLogin");
+          window.location.href = "login.html";
+        }
+      };
+
+      // TITIK 3 - HANYA DI DALAM FOLDER
       menuBtn.onclick = () => {
         menuBox.style.display =
           menuBox.style.display == "flex" ? "none" : "flex";
@@ -238,91 +251,99 @@
         selectMode = !selectMode;
         selectedIds.clear();
         menuBox.style.display = "none";
-        render();
-        if (selectMode) alert("Mode Pilih aktif: klik folder untuk memilih");
+        renderPhotos();
       };
       document.getElementById("mPilihSemua").onclick = () => {
         selectMode = true;
-        folders.forEach((f) => selectedIds.add(f.id));
         menuBox.style.display = "none";
-        render();
+        const photos = JSON.parse(
+          localStorage.getItem("photos_" + activeId) || "[]",
+        );
+        photos.forEach((_, i) => selectedIds.add("p_" + i));
+        renderPhotos();
+      };
+      document.getElementById("mTambahFoto").onclick = () => {
+        menuBox.style.display = "none";
+        document.getElementById("fileInput").click();
       };
       document.getElementById("mTambahFolder").onclick = () => {
         menuBox.style.display = "none";
+        const name = prompt("Nama folder baru di dalam ini?");
+        if (!name) return;
+        // bikin sub folder? untuk sekarang balik ke luar dan bikin folder baru
+        folders.push({ id: Date.now(), name: name.trim() });
+        save();
+        alert("Folder dibuat, kembali untuk lihat");
+      };
+      document.getElementById("mHapus").onclick = () => {
+        menuBox.style.display = "none";
+        if (selectedIds.size == 0) {
+          if (
+            confirm(
+              "Hapus folder " +
+                folders.find((x) => x.id == activeId).name +
+                " ?",
+            )
+          ) {
+            folders = folders.filter((f) => f.id != activeId);
+            localStorage.removeItem("photos_" + activeId);
+            save();
+            inside.style.display = "none";
+            outside.style.display = "block";
+            logoutBtn.style.display = "block";
+            menuBtn.style.display = "none";
+            activeId = null;
+            render();
+          }
+          return;
+        }
+        // hapus foto terpilih
+        let photos = JSON.parse(
+          localStorage.getItem("photos_" + activeId) || "[]",
+        );
+        photos = photos.filter((_, i) => !selectedIds.has("p_" + i));
+        localStorage.setItem("photos_" + activeId, JSON.stringify(photos));
+        selectedIds.clear();
+        selectMode = false;
+        renderPhotos();
+      };
+
+      document.getElementById("btnTambah").onclick = () => {
         const name = prompt("Nama folder baru:");
         if (!name) return;
         folders.push({ id: Date.now(), name: name.trim() });
         save();
         render();
       };
-      document.getElementById("mTambahFoto").onclick = () => {
-        menuBox.style.display = "none";
-        if (!activeId && selectedIds.size == 0) {
-          alert("Masuk ke folder dulu atau Pilih 1 folder");
-          return;
-        }
-        if (selectedIds.size == 1) {
-          activeId = [...selectedIds][0];
-        }
-        if (!activeId) {
-          alert("Pilih 1 folder dulu");
-          return;
-        }
-        document.getElementById("fileInput").click();
-      };
-      document.getElementById("mHapus").onclick = () => {
-        menuBox.style.display = "none";
-        if (selectedIds.size == 0 && !activeId) {
-          alert("Pilih folder dulu pakai Pilih");
-          return;
-        }
-        if (activeId && inside.style.display != "none") {
-          if (confirm("Hapus folder ini?")) {
-            folders = folders.filter((f) => f.id != activeId);
-            localStorage.removeItem("photos_" + activeId);
-            save();
-            activeId = null;
-            inside.style.display = "none";
-            outside.style.display = "block";
-            render();
-          }
-        } else {
-          if (
-            selectedIds.size > 0 &&
-            confirm("Hapus " + selectedIds.size + " folder?")
-          ) {
-            selectedIds.forEach((id) => {
-              folders = folders.filter((f) => f.id != id);
-              localStorage.removeItem("photos_" + id);
-            });
-            selectedIds.clear();
-            save();
-            render();
-          }
-        }
-      };
-
-      document.getElementById("btnTambah").onclick = () =>
-        document.getElementById("mTambahFolder").click();
       search.oninput = render;
       document.getElementById("back").onclick = () => {
         inside.style.display = "none";
         outside.style.display = "block";
+        logoutBtn.style.display = "block";
+        menuBtn.style.display = "none";
         activeId = null;
+        selectMode = false;
+        selectedIds.clear();
         render();
       };
       document.getElementById("fileInput").onchange = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          const key = "photos_" + activeId;
-          const photos = JSON.parse(localStorage.getItem(key) || "[]");
-          photos.push(ev.target.result);
-          localStorage.setItem(key, JSON.stringify(photos));
-          renderPhotos();
-        };
-        reader.readAsDataURL(file);
+        const files = [...e.target.files];
+        if (!files.length) return;
+        const key = "photos_" + activeId;
+        let photos = JSON.parse(localStorage.getItem(key) || "[]");
+        let loaded = 0;
+        files.forEach((file) => {
+          const r = new FileReader();
+          r.onload = (ev) => {
+            photos.push(ev.target.result);
+            loaded++;
+            if (loaded == files.length) {
+              localStorage.setItem(key, JSON.stringify(photos));
+              renderPhotos();
+            }
+          };
+          r.readAsDataURL(file);
+        });
       };
       render();
     </script>
