@@ -11,7 +11,7 @@
         background: linear-gradient(#0ea5e9, #e0f2fe);
         font-family: Arial;
         text-align: center;
-        padding-top: 60px;
+        padding-top: 30px;
       }
       h1 {
         color: white;
@@ -21,7 +21,6 @@
         padding: 12px 20px;
         border-radius: 25px;
         border: none;
-        outline: none;
         text-align: center;
       }
       #btnTambah {
@@ -31,8 +30,8 @@
         border: none;
         background: white;
         color: #0ea5e9;
-        cursor: pointer;
         font-weight: bold;
+        cursor: pointer;
       }
       #folderList {
         display: flex;
@@ -50,21 +49,123 @@
         cursor: pointer;
         font-weight: bold;
         min-width: 120px;
+        position: relative;
+      }
+      .folder.selected {
+        outline: 3px solid #0ea5e9;
+      }
+      .folder input {
+        position: absolute;
+        left: 8px;
+        top: 8px;
+      }
+      #inside {
+        display: none;
+      }
+      #back {
+        margin: 10px;
+        padding: 6px 15px;
+        border-radius: 15px;
+        border: none;
+        background: white;
+        cursor: pointer;
+      }
+      #photos {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      #photos img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+      }
+
+      /* TITIK 3 POJOK KANAN ATAS */
+      #menuBtn {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        background: white;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        z-index: 100;
+      }
+      #menuBox {
+        position: fixed;
+        top: 60px;
+        right: 15px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 101;
+        text-align: left;
+      }
+      #menuBox button {
+        padding: 12px 18px;
+        border: none;
+        background: white;
+        text-align: left;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+      }
+      #menuBox button:hover {
+        background: #f0f8ff;
       }
     </style>
   </head>
   <body>
-    <h1>📁 My Gallery</h1>
-    <input id="search" placeholder="🔍 Cari folder" />
-    <br />
-    <button id="btnTambah">+ Tambah Folder</button>
-    <div id="folderList"></div>
+    <button id="menuBtn">⋮</button>
+    <div id="menuBox">
+      <button id="mPilih">✓ Pilih</button>
+      <button id="mPilihSemua">☑ Pilih Semua</button>
+      <button id="mTambahFoto">🖼️ Tambahkan Foto</button>
+      <button id="mTambahFolder">📁 Tambah Folder</button>
+      <button id="mHapus">🗑️ Hapus Folder</button>
+    </div>
+
+    <div id="outside">
+      <h1>📁 My Gallery</h1>
+      <input id="search" placeholder="🔍 Cari folder" /><br />
+      <button id="btnTambah">+ Tambah Folder</button>
+      <div id="folderList"></div>
+    </div>
+
+    <div id="inside">
+      <h1 id="folderName"></h1>
+      <button id="back">← Kembali</button><br /><br />
+      <input
+        type="file"
+        id="fileInput"
+        accept="image/*"
+        style="display: none"
+      />
+      <div id="photos"></div>
+    </div>
 
     <script>
       let folders = JSON.parse(localStorage.getItem("myFolders") || "[]");
+      let activeId = null;
+      let selectMode = false;
+      let selectedIds = new Set();
+
       const list = document.getElementById("folderList");
       const search = document.getElementById("search");
-      const btn = document.getElementById("btnTambah");
+      const outside = document.getElementById("outside");
+      const inside = document.getElementById("inside");
+      const menuBtn = document.getElementById("menuBtn");
+      const menuBox = document.getElementById("menuBox");
 
       function save() {
         localStorage.setItem("myFolders", JSON.stringify(folders));
@@ -78,23 +179,151 @@
           .forEach((f) => {
             const d = document.createElement("div");
             d.className = "folder";
+            if (selectedIds.has(f.id)) d.classList.add("selected");
             d.textContent = "📁 " + f.name;
-            d.onclick = () => {
-              alert("Buka folder: " + f.name);
-            };
+            if (selectMode) {
+              const cb = document.createElement("input");
+              cb.type = "checkbox";
+              cb.checked = selectedIds.has(f.id);
+              cb.onclick = (e) => {
+                e.stopPropagation();
+                toggleSelect(f.id);
+              };
+              d.prepend(cb);
+              d.onclick = () => toggleSelect(f.id);
+            } else {
+              d.onclick = () => openFolder(f.id);
+            }
             list.appendChild(d);
           });
       }
+      function toggleSelect(id) {
+        if (selectedIds.has(id)) selectedIds.delete(id);
+        else selectedIds.add(id);
+        render();
+      }
+      function openFolder(id) {
+        if (selectMode) return toggleSelect(id);
+        activeId = id;
+        document.getElementById("folderName").textContent =
+          "📁 " + folders.find((x) => x.id == id).name;
+        outside.style.display = "none";
+        inside.style.display = "block";
+        renderPhotos();
+      }
+      function renderPhotos() {
+        const c = document.getElementById("photos");
+        c.innerHTML = "";
+        const photos = JSON.parse(
+          localStorage.getItem("photos_" + activeId) || "[]",
+        );
+        photos.forEach((src) => {
+          const img = document.createElement("img");
+          img.src = src;
+          c.appendChild(img);
+        });
+      }
 
-      btn.onclick = () => {
+      // MENU TITIK 3
+      menuBtn.onclick = () => {
+        menuBox.style.display =
+          menuBox.style.display == "flex" ? "none" : "flex";
+      };
+      window.onclick = (e) => {
+        if (e.target != menuBtn && !menuBox.contains(e.target))
+          menuBox.style.display = "none";
+      };
+
+      document.getElementById("mPilih").onclick = () => {
+        selectMode = !selectMode;
+        selectedIds.clear();
+        menuBox.style.display = "none";
+        render();
+        if (selectMode) alert("Mode Pilih aktif: klik folder untuk memilih");
+      };
+      document.getElementById("mPilihSemua").onclick = () => {
+        selectMode = true;
+        folders.forEach((f) => selectedIds.add(f.id));
+        menuBox.style.display = "none";
+        render();
+      };
+      document.getElementById("mTambahFolder").onclick = () => {
+        menuBox.style.display = "none";
         const name = prompt("Nama folder baru:");
         if (!name) return;
         folders.push({ id: Date.now(), name: name.trim() });
         save();
         render();
       };
+      document.getElementById("mTambahFoto").onclick = () => {
+        menuBox.style.display = "none";
+        if (!activeId && selectedIds.size == 0) {
+          alert("Masuk ke folder dulu atau Pilih 1 folder");
+          return;
+        }
+        if (selectedIds.size == 1) {
+          activeId = [...selectedIds][0];
+        }
+        if (!activeId) {
+          alert("Pilih 1 folder dulu");
+          return;
+        }
+        document.getElementById("fileInput").click();
+      };
+      document.getElementById("mHapus").onclick = () => {
+        menuBox.style.display = "none";
+        if (selectedIds.size == 0 && !activeId) {
+          alert("Pilih folder dulu pakai Pilih");
+          return;
+        }
+        if (activeId && inside.style.display != "none") {
+          if (confirm("Hapus folder ini?")) {
+            folders = folders.filter((f) => f.id != activeId);
+            localStorage.removeItem("photos_" + activeId);
+            save();
+            activeId = null;
+            inside.style.display = "none";
+            outside.style.display = "block";
+            render();
+          }
+        } else {
+          if (
+            selectedIds.size > 0 &&
+            confirm("Hapus " + selectedIds.size + " folder?")
+          ) {
+            selectedIds.forEach((id) => {
+              folders = folders.filter((f) => f.id != id);
+              localStorage.removeItem("photos_" + id);
+            });
+            selectedIds.clear();
+            save();
+            render();
+          }
+        }
+      };
 
+      document.getElementById("btnTambah").onclick = () =>
+        document.getElementById("mTambahFolder").click();
       search.oninput = render;
+      document.getElementById("back").onclick = () => {
+        inside.style.display = "none";
+        outside.style.display = "block";
+        activeId = null;
+        render();
+      };
+      document.getElementById("fileInput").onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const key = "photos_" + activeId;
+          const photos = JSON.parse(localStorage.getItem(key) || "[]");
+          photos.push(ev.target.result);
+          localStorage.setItem(key, JSON.stringify(photos));
+          renderPhotos();
+        };
+        reader.readAsDataURL(file);
+      };
       render();
     </script>
   </body>
