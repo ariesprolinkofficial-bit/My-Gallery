@@ -56,13 +56,11 @@
         font-weight: 400;
         color: #f5f3ef;
         margin: 0 0 6px;
-        letter-spacing: -0.02em;
       }
       .sub {
         color: #7a7a7a;
         font-size: 12.5px;
         margin-bottom: 28px;
-        letter-spacing: 0.03em;
       }
       input {
         width: 100%;
@@ -95,6 +93,9 @@
         background: white;
         transform: translateY(-1px);
       }
+      button:active {
+        transform: translateY(0);
+      }
       #msg {
         color: #ff7a7a;
         font-size: 12px;
@@ -108,11 +109,10 @@
     <div class="card">
       <div class="dot">◐</div>
       <h2>My Gallery</h2>
-      <div class="sub">Silahkan Login Terlebih Dahulu</div>
-      <input id="user" value="" placeholder="Username" /><input
+      <div class="sub">Private • Silahkan Login Terlebih Dahulu</div>
+      <input id="user" placeholder="Username" /><input
         id="pass"
         type="password"
-        value=""
         placeholder="Password"
       />
       <button id="btnLogin">Continue →</button>
@@ -120,20 +120,38 @@
     </div>
     <script>
       if (location.search.includes("logout")) localStorage.clear();
-      btnLogin.onclick = async () => {
+      async function doLogin() {
+        const u = document.getElementById("user"),
+          p = document.getElementById("pass"),
+          msg = document.getElementById("msg");
+        msg.textContent = "Loading...";
         const r = await fetch("/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: user.value, password: pass.value }),
+          body: JSON.stringify({ username: u.value, password: p.value }),
         });
         const d = await r.json();
         if (d.success) {
           localStorage.setItem("isLoggedIn", "true");
           location.href = "index.html";
         } else {
-          msg.textContent = "Wrong login";
+          msg.textContent = "Username / Password salah — pakai aries / aries";
         }
-      };
+      }
+      document.getElementById("btnLogin").onclick = doLogin;
+      // FITUR ENTER — BARU
+      document.getElementById("user").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          doLogin();
+        }
+      });
+      document.getElementById("pass").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          doLogin();
+        }
+      });
       if (
         localStorage.getItem("isLoggedIn") === "true" &&
         !location.search.includes("logout")
