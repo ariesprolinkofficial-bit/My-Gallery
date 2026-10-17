@@ -17,7 +17,8 @@
       body {
         background: #0d0d0d;
         color: #f5f3ef;
-        font-family: Inter, sans-serif;
+        font-family: "Inter", sans-serif;
+        min-height: 100vh;
       }
       .top {
         position: fixed;
@@ -57,6 +58,7 @@
         background: #1a1a1a;
         color: #fff;
         text-align: center;
+        outline: none;
       }
       #btnTambah {
         margin-top: 16px;
@@ -66,6 +68,15 @@
         background: #f5f3ef;
         color: #0d0d0d;
         font-weight: 500;
+        cursor: pointer;
+      }
+      .sub {
+        color: #666;
+        font-size: 12px;
+        margin-top: 12px;
+      }
+      .sub b {
+        color: #aaa;
       }
       #folderList {
         display: grid;
@@ -80,6 +91,14 @@
         border-radius: 20px;
         cursor: pointer;
       }
+      .folder b {
+        display: block;
+        margin-bottom: 4px;
+      }
+      .folder span {
+        font-size: 10px;
+        color: #777;
+      }
       #inside {
         display: none;
       }
@@ -88,6 +107,12 @@
         align-items: center;
         justify-content: space-between;
         margin-bottom: 18px;
+      }
+      #back {
+        all: unset;
+        font-family: "Instrument Serif", serif;
+        font-size: 18px;
+        cursor: pointer;
       }
       #menuBtnInside {
         width: 40px;
@@ -136,6 +161,7 @@
         overflow: hidden;
         background: #181818;
         aspect-ratio: 1/1;
+        cursor: pointer;
       }
       .photoWrap img {
         width: 100%;
@@ -144,6 +170,7 @@
       }
       .photoWrap.selected {
         outline: 2px solid #fff;
+        outline-offset: 2px;
       }
       #barSelect {
         position: fixed;
@@ -165,6 +192,7 @@
         border: 1px solid rgba(255, 255, 255, 0.15);
         background: rgba(255, 255, 255, 0.08);
         color: #fff;
+        font-size: 12px;
       }
       #lightbox {
         position: fixed;
@@ -198,26 +226,25 @@
           border: 1px solid rgba(255, 255, 255, 0.18);
           background: rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(16px);
-          font-family: Inter, sans-serif;
+          font-family: &quot;Inter&quot;, sans-serif;
           font-size: 13.5px;
           color: #f5f3ef;
           cursor: pointer;
-          box-shadow:
-            0 2px 12px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.08);
         "
       >
         Logout
       </button>
     </div>
+
     <div id="menuBox">
-      <button id="mPilih">✓ Pilih</button
-      ><button id="mPilihSemua">☑ Pilih Semua</button
-      ><button id="mTambahFoto">＋ Tambahkan Foto</button
-      ><button id="mTambahFolder">＋ Tambah Folder</button
-      ><button id="mRename">✎ Ganti Nama Folder</button
-      ><button id="mHapus" style="color: #ff8a8a">— Hapus</button>
+      <button id="mPilih">✓ Pilih</button>
+      <button id="mPilihSemua">☑ Pilih Semua</button>
+      <button id="mTambahFoto">＋ Tambahkan Foto</button>
+      <button id="mTambahFolder">＋ Tambah Folder</button>
+      <button id="mRename">✎ Ganti Nama Folder</button>
+      <button id="mHapus" style="color: #ff8a8a">— Hapus</button>
     </div>
+
     <div id="lightbox">
       <img id="lightImg" /><button
         id="closeLight"
@@ -241,14 +268,12 @@
       ><button id="btnCancel">Batal</button
       ><button id="btnDeleteSel" style="background: #ff5a5a">Hapus</button>
     </div>
+
     <div class="wrap">
       <div id="outside">
         <div class="centerHead">
-          <input id="search" placeholder="Search folder" /><button
-            id="btnTambah"
-          >
-            ＋ New folder
-          </button>
+          <input id="search" placeholder="Search folder" />
+          <button id="btnTambah">＋ New folder</button>
           <div class="sub">
             <b id="folderCount">0</b> Folder <b id="photoCount">0</b> Foto
           </div>
@@ -279,6 +304,7 @@
         <div id="photos"></div>
       </div>
     </div>
+
     <script>
       let folders = JSON.parse(localStorage.getItem("myFolders") || "[]");
       let activeId = null,
@@ -295,6 +321,7 @@
         lightImg = document.getElementById("lightImg"),
         bar = document.getElementById("barSelect"),
         fileInput = document.getElementById("fileInput");
+
       function save() {
         localStorage.setItem("myFolders", JSON.stringify(folders));
         let total = 0;
@@ -344,7 +371,7 @@
           localStorage.getItem("photos_" + activeId) || "[]",
         );
         document.getElementById("insideSub").textContent =
-          photos.length + " Foto";
+          photos.length + " Foto • tap 2x untuk besar";
         if (!photos.length) {
           photosDiv.innerHTML =
             "<p style='color:#666;font-size:13px;margin-top:20px'>Belum ada foto. Klik ⋮ > Tambahkan Foto</p>";
@@ -380,13 +407,14 @@
         document.getElementById("selCount").textContent =
           selected.size + " dipilih";
       }
+
       logoutBtn.onclick = () => {
         localStorage.removeItem("isLoggedIn");
         location.href = "login.html";
       };
       search.oninput = render;
       document.getElementById("btnTambah").onclick = () => {
-        const n = prompt("Nama folder:");
+        const n = prompt("Nama folder baru:");
         if (!n) return;
         folders.push({ id: Date.now(), name: n.trim() });
         save();
@@ -402,6 +430,8 @@
         updateBar();
         render();
       };
+
+      // --- FIX MENU TITIK 3 ---
       const menuBtnInside = document.getElementById("menuBtnInside");
       menuBtnInside.onclick = (e) => {
         e.stopPropagation();
@@ -461,12 +491,14 @@
         save();
         render();
         menuBox.style.display = "none";
-        alert("Folder '" + n + "' dibuat!");
+        alert(
+          "Folder '" + n + "' dibuat! Kembali ke halaman utama untuk melihat.",
+        );
       };
       document.getElementById("mRename").onclick = () => {
         const f = folders.find((x) => x.id == activeId);
         if (!f) return;
-        const n = prompt("Ganti nama:", f.name);
+        const n = prompt("Ganti nama folder:", f.name);
         if (!n) {
           menuBox.style.display = "none";
           return;
