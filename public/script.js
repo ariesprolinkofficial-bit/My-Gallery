@@ -36,6 +36,12 @@ function tambahFolder() {
   save();
   render();
 }
+function updateBar() {
+  const selCount = document.getElementById("selCount");
+  if (selCount) {
+    selCount.textContent = selected.size + " dipilih";
+  }
+}
 
 // biar tombol + Tambah Folder jalan
 if (btnTambah) btnTambah.addEventListener("click", tambahFolder);

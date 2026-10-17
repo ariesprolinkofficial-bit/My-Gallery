@@ -233,18 +233,53 @@
       }
       #barSelect {
         position: fixed;
-        bottom: 24px;
+        bottom: 28px;
         left: 50%;
         transform: translateX(-50%);
-        background: white;
-        color: black;
-        padding: 10px 20px;
+        background: rgba(28, 28, 28, 0.92);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #f5f3ef;
+        padding: 8px 10px 8px 20px;
         border-radius: 100px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
         display: none;
-        gap: 12px;
+        gap: 14px;
         align-items: center;
         z-index: 90;
+        font-size: 13.5px;
+        letter-spacing: 0.02em;
+      }
+      #barSelect #selCount {
+        color: #aaa;
+        font-weight: 400;
+      }
+      #barSelect button {
+        padding: 8px 18px;
+        border-radius: 100px;
+        border: 1px solid transparent;
         font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      #btnCancel {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ddd;
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+      #btnCancel:hover {
+        background: rgba(255, 255, 255, 0.14);
+        color: white;
+      }
+      #btnDeleteSel {
+        background: #f5f3ef;
+        color: #111;
+        border-color: white;
+      }
+      #btnDeleteSel:hover {
+        background: white;
+        transform: scale(1.02);
       }
       .h {
         font-family: "Instrument Serif", serif;
