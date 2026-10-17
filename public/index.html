@@ -278,14 +278,29 @@
     </div>
     <div class="wrap">
       <div id="outside">
-        <input id="search" placeholder="Search folder" />
-        <div style="margin-top: 26px; margin-bottom: 6px">
-          <button id="btnTambah">＋ New folder</button>
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            text-align: center;
+          "
+        >
+          <input
+            id="search"
+            placeholder="Search folder"
+            style="text-align: center; width: 100%; max-width: 380px"
+          />
+          <div style="margin-top: 18px">
+            <button id="btnTambah">＋ New folder</button>
+          </div>
+          <div class="sub" style="margin-top: 12px; text-align: center">
+            <b id="folderCount">0</b> Folder <b id="photoCount">0</b> Foto
+          </div>
         </div>
-        <div class="sub">
-          <b id="folderCount">0</b> Folder <b id="photoCount">0</b> Foto
-        </div>
-        <div id="folderList"></div>
+        <div id="folderList" style="margin-top: 28px"></div>
       </div>
       <div id="inside">
         <button id="back" class="back">← Back</button>
