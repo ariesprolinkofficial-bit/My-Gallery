@@ -206,19 +206,6 @@ body {
   border-radius: 15px;
   cursor: pointer;
 }
-#logoutBtn {
-  all: unset;
-  font-family: "Instrument Serif", serif;
-  font-size: 21px;
-  color: #f5f3ef;
-  opacity: 0.85;
-  cursor: pointer;
-  letter-spacing: 0.01em;
-  transition: 0.2s;
-}
-#logoutBtn:hover {
-  opacity: 1;
-}
 #logoutBtn:active {
   transform: translateY(0px) scale(0.97);
 }
