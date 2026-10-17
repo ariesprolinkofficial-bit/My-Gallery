@@ -17,8 +17,7 @@
       body {
         background: #0d0d0d;
         color: #f5f3ef;
-        font-family: "Inter", sans-serif;
-        min-height: 100vh;
+        font-family: Inter, sans-serif;
       }
       .top {
         position: fixed;
@@ -58,7 +57,6 @@
         background: #1a1a1a;
         color: #fff;
         text-align: center;
-        outline: none;
       }
       #btnTambah {
         margin-top: 16px;
@@ -70,19 +68,11 @@
         font-weight: 500;
         cursor: pointer;
       }
-      .sub {
-        color: #666;
-        font-size: 12px;
-        margin-top: 12px;
-      }
-      .sub b {
-        color: #aaa;
-      }
-      #folderList {
+      .folderGrid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 14px;
-        margin-top: 32px;
+        margin-top: 18px;
       }
       .folder {
         background: #181818;
@@ -90,10 +80,13 @@
         padding: 20px;
         border-radius: 20px;
         cursor: pointer;
+        transition: 0.15s;
+      }
+      .folder:hover {
+        border-color: rgba(255, 255, 255, 0.15);
       }
       .folder b {
         display: block;
-        margin-bottom: 4px;
       }
       .folder span {
         font-size: 10px;
@@ -161,7 +154,6 @@
         overflow: hidden;
         background: #181818;
         aspect-ratio: 1/1;
-        cursor: pointer;
       }
       .photoWrap img {
         width: 100%;
@@ -170,7 +162,6 @@
       }
       .photoWrap.selected {
         outline: 2px solid #fff;
-        outline-offset: 2px;
       }
       #barSelect {
         position: fixed;
@@ -179,20 +170,11 @@
         transform: translateX(-50%);
         background: #1e1e1e;
         border: 1px solid rgba(255, 255, 255, 0.12);
-        padding: 10px 14px 10px 18px;
+        padding: 10px 14px;
         border-radius: 100px;
         display: none;
-        align-items: center;
         gap: 14px;
         z-index: 90;
-      }
-      #barSelect button {
-        padding: 7px 16px;
-        border-radius: 100px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        background: rgba(255, 255, 255, 0.08);
-        color: #fff;
-        font-size: 12px;
       }
       #lightbox {
         position: fixed;
@@ -226,7 +208,6 @@
           border: 1px solid rgba(255, 255, 255, 0.18);
           background: rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(16px);
-          font-family: &quot;Inter&quot;, sans-serif;
           font-size: 13.5px;
           color: #f5f3ef;
           cursor: pointer;
@@ -235,16 +216,14 @@
         Logout
       </button>
     </div>
-
     <div id="menuBox">
-      <button id="mPilih">✓ Pilih</button>
-      <button id="mPilihSemua">☑ Pilih Semua</button>
-      <button id="mTambahFoto">＋ Tambahkan Foto</button>
-      <button id="mTambahFolder">＋ Tambah Folder</button>
-      <button id="mRename">✎ Ganti Nama Folder</button>
-      <button id="mHapus" style="color: #ff8a8a">— Hapus</button>
+      <button id="mPilih">✓ Pilih</button
+      ><button id="mPilihSemua">☑ Pilih Semua</button
+      ><button id="mTambahFoto">＋ Tambahkan Foto</button
+      ><button id="mTambahFolder">＋ Tambah Folder di Sini</button
+      ><button id="mRename">✎ Ganti Nama Folder</button
+      ><button id="mHapus" style="color: #ff8a8a">— Hapus</button>
     </div>
-
     <div id="lightbox">
       <img id="lightImg" /><button
         id="closeLight"
@@ -264,21 +243,33 @@
       </button>
     </div>
     <div id="barSelect">
-      <span id="selCount" style="font-size: 12px">0 dipilih</span
-      ><button id="btnCancel">Batal</button
-      ><button id="btnDeleteSel" style="background: #ff5a5a">Hapus</button>
+      <span id="selCount">0 dipilih</span><button id="btnCancel">Batal</button
+      ><button
+        id="btnDeleteSel"
+        style="
+          background: #ff5a5a;
+          padding: 7px 16px;
+          border-radius: 100px;
+          border: none;
+          color: #fff;
+        "
+      >
+        Hapus
+      </button>
     </div>
-
     <div class="wrap">
       <div id="outside">
         <div class="centerHead">
-          <input id="search" placeholder="Search folder" />
-          <button id="btnTambah">＋ New folder</button>
-          <div class="sub">
+          <input id="search" placeholder="Search folder" /><button
+            id="btnTambah"
+          >
+            ＋ New folder
+          </button>
+          <div style="color: #666; font-size: 12px; margin-top: 12px">
             <b id="folderCount">0</b> Folder <b id="photoCount">0</b> Foto
           </div>
         </div>
-        <div id="folderList"></div>
+        <div id="folderList" class="folderGrid"></div>
       </div>
       <div id="inside">
         <div class="insideTop">
@@ -293,7 +284,8 @@
             margin-bottom: 6px;
           "
         ></h1>
-        <div class="sub" id="insideSub"></div>
+        <div id="insideSub" style="color: #666; font-size: 12px"></div>
+        <div id="insideFolderList" class="folderGrid"></div>
         <input
           type="file"
           id="fileInput"
@@ -304,9 +296,10 @@
         <div id="photos"></div>
       </div>
     </div>
-
     <script>
       let folders = JSON.parse(localStorage.getItem("myFolders") || "[]");
+      // migrasi data lama biar tidak hilang
+      folders = folders.map((f) => ({ parentId: null, ...f }));
       let activeId = null,
         selectMode = false,
         selected = new Set();
@@ -317,10 +310,11 @@
         logoutBtn = document.getElementById("logoutBtn"),
         menuBox = document.getElementById("menuBox"),
         photosDiv = document.getElementById("photos"),
+        insideFolderList = document.getElementById("insideFolderList"),
+        fileInput = document.getElementById("fileInput"),
         lightbox = document.getElementById("lightbox"),
         lightImg = document.getElementById("lightImg"),
-        bar = document.getElementById("barSelect"),
-        fileInput = document.getElementById("fileInput");
+        bar = document.getElementById("barSelect");
 
       function save() {
         localStorage.setItem("myFolders", JSON.stringify(folders));
@@ -335,18 +329,20 @@
         document.getElementById("folderCount").textContent = folders.length;
         document.getElementById("photoCount").textContent = total;
       }
-      function render() {
+
+      function renderRoot() {
         list.innerHTML = "";
         const q = (search.value || "").toLowerCase();
         folders
-          .filter((f) => f.name.toLowerCase().includes(q))
+          .filter((f) => !f.parentId && f.name.toLowerCase().includes(q))
           .forEach((f) => {
             const ph = JSON.parse(
               localStorage.getItem("photos_" + f.id) || "[]",
             );
+            const sub = folders.filter((x) => x.parentId == f.id).length;
             const d = document.createElement("div");
             d.className = "folder";
-            d.innerHTML = `<b>${f.name}</b><span>${ph.length} FOTO</span>`;
+            d.innerHTML = `<b>${f.name}</b><span>${sub ? sub + " FOLDER • " : ""}${ph.length} FOTO</span>`;
             d.onclick = () => openFolder(f.id);
             list.appendChild(d);
           });
@@ -358,23 +354,35 @@
         selectMode = false;
         updateBar();
         const f = folders.find((x) => x.id == id);
-        document.getElementById("folderName").textContent = f ? f.name : "";
+        if (!f) return;
+        document.getElementById("folderName").textContent = f.name;
         outside.style.display = "none";
         inside.style.display = "block";
         logoutBtn.style.display = "none";
         menuBox.style.display = "none";
-        renderPhotos();
+        renderInside();
       }
-      function renderPhotos() {
+      function renderInside() {
+        insideFolderList.innerHTML = "";
         photosDiv.innerHTML = "";
+        const subFolders = folders.filter((f) => f.parentId == activeId);
         const photos = JSON.parse(
           localStorage.getItem("photos_" + activeId) || "[]",
         );
         document.getElementById("insideSub").textContent =
-          photos.length + " Foto • tap 2x untuk besar";
-        if (!photos.length) {
+          `${subFolders.length} Folder • ${photos.length} Foto`;
+        subFolders.forEach((f) => {
+          const ph = JSON.parse(localStorage.getItem("photos_" + f.id) || "[]");
+          const sub = folders.filter((x) => x.parentId == f.id).length;
+          const d = document.createElement("div");
+          d.className = "folder";
+          d.innerHTML = `<b>📁 ${f.name}</b><span>${sub ? sub + " FOLDER • " : ""}${ph.length} FOTO</span>`;
+          d.onclick = () => openFolder(f.id);
+          insideFolderList.appendChild(d);
+        });
+        if (!photos.length && !subFolders.length) {
           photosDiv.innerHTML =
-            "<p style='color:#666;font-size:13px;margin-top:20px'>Belum ada foto. Klik ⋮ > Tambahkan Foto</p>";
+            "<p style='color:#666;font-size:13px;margin-top:20px'>Kosong. Klik ⋮ > Tambah Folder di Sini atau Tambahkan Foto</p>";
           return;
         }
         photos.forEach((src, i) => {
@@ -388,7 +396,7 @@
               if (selected.has(i)) selected.delete(i);
               else selected.add(i);
               updateBar();
-              renderPhotos();
+              renderInside();
             }
           };
           w.ondblclick = () => {
@@ -399,39 +407,44 @@
         });
       }
       function updateBar() {
-        if (!selectMode) {
-          bar.style.display = "none";
-          return;
-        }
-        bar.style.display = "flex";
+        bar.style.display = selectMode ? "flex" : "none";
         document.getElementById("selCount").textContent =
           selected.size + " dipilih";
       }
 
+      document.getElementById("btnTambah").onclick = () => {
+        const n = prompt("Nama folder baru:");
+        if (!n) return;
+        folders.push({ id: Date.now(), name: n.trim(), parentId: null });
+        save();
+        renderRoot();
+      };
       logoutBtn.onclick = () => {
         localStorage.removeItem("isLoggedIn");
         location.href = "login.html";
       };
-      search.oninput = render;
-      document.getElementById("btnTambah").onclick = () => {
-        const n = prompt("Nama folder baru:");
-        if (!n) return;
-        folders.push({ id: Date.now(), name: n.trim() });
-        save();
-        render();
-      };
+      search.oninput = renderRoot;
       document.getElementById("back").onclick = () => {
-        inside.style.display = "none";
-        outside.style.display = "block";
-        logoutBtn.style.display = "inline-flex";
-        activeId = null;
-        selectMode = false;
-        selected.clear();
-        updateBar();
-        render();
+        if (activeId === null) {
+          inside.style.display = "none";
+          outside.style.display = "block";
+          logoutBtn.style.display = "inline-flex";
+          return;
+        }
+        const cur = folders.find((x) => x.id == activeId);
+        if (cur && cur.parentId) {
+          openFolder(cur.parentId);
+        } else {
+          inside.style.display = "none";
+          outside.style.display = "block";
+          logoutBtn.style.display = "inline-flex";
+          activeId = null;
+          selected.clear();
+          selectMode = false;
+          updateBar();
+          renderRoot();
+        }
       };
-
-      // --- FIX MENU TITIK 3 ---
       const menuBtnInside = document.getElementById("menuBtnInside");
       menuBtnInside.onclick = (e) => {
         e.stopPropagation();
@@ -451,7 +464,7 @@
         selected = new Set(photos.map((_, i) => i));
         menuBox.style.display = "none";
         updateBar();
-        renderPhotos();
+        renderInside();
       };
       document.getElementById("mTambahFoto").onclick = () => {
         menuBox.style.display = "none";
@@ -476,29 +489,31 @@
           );
           photos = photos.concat(imgs);
           localStorage.setItem("photos_" + activeId, JSON.stringify(photos));
-          renderPhotos();
+          renderInside();
           save();
           fileInput.value = "";
         });
       };
       document.getElementById("mTambahFolder").onclick = () => {
-        const n = prompt("Nama folder baru:");
+        const n = prompt(
+          "Nama folder di dalam '" +
+            (folders.find((x) => x.id == activeId)?.name || "") +
+            "':",
+        );
         if (!n) {
           menuBox.style.display = "none";
           return;
         }
-        folders.push({ id: Date.now(), name: n.trim() });
+        folders.push({ id: Date.now(), name: n.trim(), parentId: activeId });
         save();
-        render();
         menuBox.style.display = "none";
-        alert(
-          "Folder '" + n + "' dibuat! Kembali ke halaman utama untuk melihat.",
-        );
+        renderInside();
+        renderRoot();
       };
       document.getElementById("mRename").onclick = () => {
         const f = folders.find((x) => x.id == activeId);
         if (!f) return;
-        const n = prompt("Ganti nama folder:", f.name);
+        const n = prompt("Ganti nama:", f.name);
         if (!n) {
           menuBox.style.display = "none";
           return;
@@ -506,7 +521,8 @@
         f.name = n.trim();
         save();
         document.getElementById("folderName").textContent = f.name;
-        render();
+        renderRoot();
+        renderInside();
         menuBox.style.display = "none";
       };
       document.getElementById("mHapus").onclick = () => {
@@ -521,13 +537,31 @@
           selected.clear();
           selectMode = false;
           updateBar();
-          renderPhotos();
+          renderInside();
           save();
         } else {
-          if (!confirm("Hapus folder ini?")) return;
-          folders = folders.filter((x) => x.id != activeId);
-          localStorage.removeItem("photos_" + activeId);
+          if (
+            !confirm(
+              "Hapus folder '" +
+                folders.find((x) => x.id == activeId)?.name +
+                "' beserta isinya?",
+            )
+          )
+            return;
+          const delIds = (id) => {
+            let ids = [id];
+            folders
+              .filter((f) => f.parentId == id)
+              .forEach((c) => {
+                ids = ids.concat(delIds(c.id));
+              });
+            return ids;
+          };
+          const toDel = delIds(activeId);
+          toDel.forEach((id) => localStorage.removeItem("photos_" + id));
+          folders = folders.filter((f) => !toDel.includes(f.id));
           save();
+          const cur = folders.find((x) => x.id == activeId); // sudah kehapus
           document.getElementById("back").click();
         }
       };
@@ -535,7 +569,7 @@
         selectMode = false;
         selected.clear();
         updateBar();
-        renderPhotos();
+        renderInside();
       };
       document.getElementById("btnDeleteSel").onclick = () =>
         document.getElementById("mHapus").click();
@@ -549,7 +583,7 @@
         if (!menuBox.contains(e.target) && e.target !== menuBtnInside)
           menuBox.style.display = "none";
       });
-      render();
+      renderRoot();
     </script>
   </body>
 </html>
