@@ -90,21 +90,14 @@
         padding: 20px;
         border-radius: 20px;
         cursor: pointer;
-        transition: 0.2s;
-      }
-      .folder:hover {
-        border-color: rgba(255, 255, 255, 0.15);
-        transform: translateY(-1px);
       }
       .folder b {
-        font-size: 16px;
         display: block;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
       }
       .folder span {
         font-size: 10px;
         color: #777;
-        letter-spacing: 0.06em;
       }
       #inside {
         display: none;
@@ -119,27 +112,20 @@
         all: unset;
         font-family: "Instrument Serif", serif;
         font-size: 18px;
-        color: #f5f3ef;
         cursor: pointer;
-        padding: 6px 0;
-        border-bottom: 1px solid transparent;
       }
-      #back:hover {
-        border-bottom-color: rgba(255, 255, 255, 0.3);
-      }
-      #menuBtn {
+      #menuBtnInside {
         width: 40px;
         height: 40px;
         border-radius: 50%;
         border: 1px solid rgba(255, 255, 255, 0.15);
         background: rgba(255, 255, 255, 0.06);
-        backdrop-filter: blur(10px);
         color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        font-size: 20px;
+        font-size: 22px;
       }
       #menuBox {
         position: fixed;
@@ -151,9 +137,8 @@
         display: none;
         flex-direction: column;
         z-index: 200;
-        min-width: 220px;
+        min-width: 230px;
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       }
       #menuBox button {
         padding: 13px 16px;
@@ -165,9 +150,6 @@
         font-size: 13.5px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       }
-      #menuBox button:hover {
-        background: #262626;
-      }
       #photos {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -175,7 +157,6 @@
         margin-top: 18px;
       }
       .photoWrap {
-        position: relative;
         border-radius: 14px;
         overflow: hidden;
         background: #181818;
@@ -189,16 +170,16 @@
       }
       .photoWrap.selected {
         outline: 2px solid #fff;
+        outline-offset: 2px;
       }
       #barSelect {
         position: fixed;
         bottom: 22px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(30, 30, 30, 0.95);
-        backdrop-filter: blur(20px);
+        background: #1e1e1e;
         border: 1px solid rgba(255, 255, 255, 0.12);
-        padding: 8px 12px 8px 18px;
+        padding: 10px 14px 10px 18px;
         border-radius: 100px;
         display: none;
         align-items: center;
@@ -212,7 +193,6 @@
         background: rgba(255, 255, 255, 0.08);
         color: #fff;
         font-size: 12px;
-        cursor: pointer;
       }
       #lightbox {
         position: fixed;
@@ -236,27 +216,20 @@
   <body>
     <div class="top">
       <div class="logo">My Gallery</div>
-      <!-- V3 GLASS PILL LOGOUT FINAL -->
       <button
         id="logoutBtn"
         style="
           all: unset;
           display: inline-flex;
-          align-items: center;
-          justify-content: center;
           padding: 9px 22px;
           border-radius: 100px;
           border: 1px solid rgba(255, 255, 255, 0.18);
           background: rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
           font-family: &quot;Inter&quot;, sans-serif;
           font-size: 13.5px;
           color: #f5f3ef;
           cursor: pointer;
-          box-shadow:
-            0 2px 12px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.08);
         "
       >
         Logout
@@ -285,23 +258,15 @@
           border: 1px solid rgba(255, 255, 255, 0.2);
           background: rgba(255, 255, 255, 0.1);
           color: #fff;
-          font-size: 20px;
         "
       >
         ✕
       </button>
     </div>
     <div id="barSelect">
-      <span id="selCount" style="font-size: 12px">0 dipilih</span>
-      <div style="display: flex; gap: 8px">
-        <button id="btnCancel">Batal</button
-        ><button
-          id="btnDeleteSel"
-          style="background: #ff5a5a; border-color: #ff5a5a"
-        >
-          Hapus
-        </button>
-      </div>
+      <span id="selCount" style="font-size: 12px">0 dipilih</span
+      ><button id="btnCancel">Batal</button
+      ><button id="btnDeleteSel" style="background: #ff5a5a">Hapus</button>
     </div>
 
     <div class="wrap">
@@ -315,11 +280,10 @@
         </div>
         <div id="folderList"></div>
       </div>
-
       <div id="inside">
         <div class="insideTop">
-          <button id="back">← Kembali</button>
-          <button id="menuBtnInside">⋮</button>
+          <button id="back">← Kembali</button
+          ><button id="menuBtnInside">⋮</button>
         </div>
         <h1
           id="folderName"
@@ -329,7 +293,7 @@
             margin-bottom: 6px;
           "
         ></h1>
-        <div class="sub" id="insideSub" style="margin-bottom: 10px"></div>
+        <div class="sub" id="insideSub"></div>
         <input
           type="file"
           id="fileInput"
@@ -342,13 +306,10 @@
     </div>
 
     <script>
-      if (localStorage.getItem("isLoggedIn") !== "true")
-        location.href = "login.html";
       let folders = JSON.parse(localStorage.getItem("myFolders") || "[]");
       let activeId = null,
         selectMode = false,
         selected = new Set();
-
       const list = document.getElementById("folderList"),
         search = document.getElementById("search"),
         outside = document.getElementById("outside"),
@@ -358,7 +319,8 @@
         photosDiv = document.getElementById("photos"),
         lightbox = document.getElementById("lightbox"),
         lightImg = document.getElementById("lightImg"),
-        bar = document.getElementById("barSelect");
+        bar = document.getElementById("barSelect"),
+        fileInput = document.getElementById("fileInput");
 
       function save() {
         localStorage.setItem("myFolders", JSON.stringify(folders));
@@ -375,7 +337,7 @@
       }
       function render() {
         list.innerHTML = "";
-        const q = search.value.toLowerCase();
+        const q = (search.value || "").toLowerCase();
         folders
           .filter((f) => f.name.toLowerCase().includes(q))
           .forEach((f) => {
@@ -395,9 +357,8 @@
         selected.clear();
         selectMode = false;
         updateBar();
-        document.getElementById("folderName").textContent = folders.find(
-          (x) => x.id == id,
-        ).name;
+        const f = folders.find((x) => x.id == id);
+        document.getElementById("folderName").textContent = f ? f.name : "";
         outside.style.display = "none";
         inside.style.display = "block";
         logoutBtn.style.display = "none";
@@ -410,10 +371,10 @@
           localStorage.getItem("photos_" + activeId) || "[]",
         );
         document.getElementById("insideSub").textContent =
-          photos.length + " Foto • ketuk 2x untuk perbesar";
+          photos.length + " Foto • tap 2x untuk besar";
         if (!photos.length) {
           photosDiv.innerHTML =
-            "<p style='color:#666;font-size:13px;margin-top:20px'>Belum ada foto. Klik titik 3 > Tambahkan Foto</p>";
+            "<p style='color:#666;font-size:13px;margin-top:20px'>Belum ada foto. Klik ⋮ > Tambahkan Foto</p>";
           return;
         }
         photos.forEach((src, i) => {
@@ -470,8 +431,10 @@
         render();
       };
 
+      // --- FIX MENU TITIK 3 ---
       const menuBtnInside = document.getElementById("menuBtnInside");
-      menuBtnInside.onclick = () => {
+      menuBtnInside.onclick = (e) => {
+        e.stopPropagation();
         menuBox.style.display =
           menuBox.style.display === "flex" ? "none" : "flex";
       };
@@ -492,20 +455,22 @@
       };
       document.getElementById("mTambahFoto").onclick = () => {
         menuBox.style.display = "none";
-        document.getElementById("fileInput").click();
+        fileInput.value = "";
+        fileInput.click();
       };
-      document.getElementById("fileInput").onchange = (e) => {
+      fileInput.onchange = (e) => {
         const files = [...e.target.files];
         if (!files.length) return;
-        const readerPromises = files.map(
-          (f) =>
-            new Promise((res) => {
-              const r = new FileReader();
-              r.onload = () => res(r.result);
-              r.readAsDataURL(f);
-            }),
-        );
-        Promise.all(readerPromises).then((imgs) => {
+        Promise.all(
+          files.map(
+            (f) =>
+              new Promise((res) => {
+                const r = new FileReader();
+                r.onload = () => res(r.result);
+                r.readAsDataURL(f);
+              }),
+          ),
+        ).then((imgs) => {
           let photos = JSON.parse(
             localStorage.getItem("photos_" + activeId) || "[]",
           );
@@ -513,20 +478,31 @@
           localStorage.setItem("photos_" + activeId, JSON.stringify(photos));
           renderPhotos();
           save();
+          fileInput.value = "";
         });
       };
       document.getElementById("mTambahFolder").onclick = () => {
         const n = prompt("Nama folder baru:");
-        if (!n) return;
+        if (!n) {
+          menuBox.style.display = "none";
+          return;
+        }
         folders.push({ id: Date.now(), name: n.trim() });
         save();
         render();
         menuBox.style.display = "none";
+        alert(
+          "Folder '" + n + "' dibuat! Kembali ke halaman utama untuk melihat.",
+        );
       };
       document.getElementById("mRename").onclick = () => {
         const f = folders.find((x) => x.id == activeId);
+        if (!f) return;
         const n = prompt("Ganti nama folder:", f.name);
-        if (!n) return;
+        if (!n) {
+          menuBox.style.display = "none";
+          return;
+        }
         f.name = n.trim();
         save();
         document.getElementById("folderName").textContent = f.name;
@@ -534,6 +510,7 @@
         menuBox.style.display = "none";
       };
       document.getElementById("mHapus").onclick = () => {
+        menuBox.style.display = "none";
         if (selectMode && selected.size > 0) {
           if (!confirm("Hapus " + selected.size + " foto?")) return;
           let photos = JSON.parse(
@@ -553,7 +530,6 @@
           save();
           document.getElementById("back").click();
         }
-        menuBox.style.display = "none";
       };
       document.getElementById("btnCancel").onclick = () => {
         selectMode = false;
