@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Gallery</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -25,7 +25,7 @@
         left: 0;
         right: 0;
         height: 64px;
-        background: rgba(15, 15, 15, 0.92);
+        background: rgba(15, 15, 15, 0.85);
         backdrop-filter: blur(20px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.07);
         display: flex;
@@ -36,61 +36,53 @@
       }
       .logo {
         font-family: "Instrument Serif", serif;
-        font-size: 24px;
-        letter-spacing: 0.01em;
+        font-size: 22px;
       }
-      #logoutBtn {
-        all: unset !important;
-        font-family: "Instrument Serif", serif !important;
-        font-size: 22px !important;
-        color: #f5f3ef !important;
-        opacity: 0.88;
+      .topBtn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #1c1c1c;
+        color: white;
         cursor: pointer;
-        letter-spacing: 0.01em;
-        transition: 0.2s;
-      }
-      #logoutBtn:hover {
-        opacity: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .wrap {
         padding: 90px 28px 40px;
         max-width: 1200px;
         margin: 0 auto;
       }
-      .centerHead {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        text-align: center;
-      }
       #search {
-        width: 100%;
-        max-width: 380px;
-        padding: 13px 20px;
+        width: 320px;
+        padding: 11px 18px;
         border-radius: 100px;
         border: 1px solid rgba(255, 255, 255, 0.12);
         background: #1c1c1c;
         color: white;
-        font-size: 13.5px;
+        font-size: 13px;
         outline: none;
-        text-align: center;
       }
       #btnTambah {
-        margin-top: 18px;
-        padding: 11px 24px;
+        padding: 10px 20px;
         border-radius: 100px;
         border: 1px solid rgba(255, 255, 255, 0.15);
         background: white;
         color: black;
-        font-size: 13.5px;
+        font-size: 13px;
         font-weight: 500;
         cursor: pointer;
+      }
+      #btnTambah:hover {
+        background: #f5f3ef;
       }
       .sub {
         color: #7a7a7a;
         font-size: 13px;
-        margin-top: 12px;
+        margin-top: 8px;
+        margin-bottom: 24px;
       }
       .sub b {
         color: #a8a8a8;
@@ -100,19 +92,26 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 16px;
-        margin-top: 32px;
       }
       .folder {
         background: #1c1c1c;
         border: 1px solid rgba(255, 255, 255, 0.07);
         padding: 20px;
-        border-radius: 22px;
+        border-radius: 20px;
         cursor: pointer;
+        transition: 0.25s;
+      }
+      .folder:hover {
+        transform: translateY(-3px);
+        background: #222;
       }
       .folder b {
         font-size: 18px;
         display: block;
         margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .folder span {
         font-size: 11px;
@@ -151,6 +150,30 @@
         height: 100%;
         object-fit: cover;
       }
+      .photoWrap.selected {
+        outline: 2px solid white;
+      }
+      .check {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 1.5px solid white;
+        background: rgba(0, 0, 0, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+      .photoWrap.selectMode .check {
+        display: flex;
+      }
+      .photoWrap.selected .check {
+        background: white;
+        color: black;
+      }
       #lightbox {
         position: fixed;
         inset: 0;
@@ -167,6 +190,19 @@
         max-width: 92vw;
         max-height: 88vh;
         border-radius: 18px;
+      }
+      #closeLight {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
       }
       #menuBox {
         position: fixed;
@@ -191,6 +227,10 @@
         font-size: 13.5px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       }
+      #menuBox button:hover {
+        background: #262626;
+        color: white;
+      }
       #barSelect {
         position: fixed;
         bottom: 28px;
@@ -202,19 +242,44 @@
         color: #f5f3ef;
         padding: 8px 10px 8px 20px;
         border-radius: 100px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
         display: none;
         gap: 14px;
         align-items: center;
         z-index: 90;
+        font-size: 13.5px;
+        letter-spacing: 0.02em;
+      }
+      #barSelect #selCount {
+        color: #aaa;
+        font-weight: 400;
       }
       #barSelect button {
         padding: 8px 18px;
         border-radius: 100px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        border: 1px solid transparent;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      #btnCancel {
         background: rgba(255, 255, 255, 0.08);
         color: #ddd;
-        font-size: 13px;
-        cursor: pointer;
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+      #btnCancel:hover {
+        background: rgba(255, 255, 255, 0.14);
+        color: white;
+      }
+      #btnDeleteSel {
+        background: #f5f3ef;
+        color: #111;
+        border-color: white;
+      }
+      #btnDeleteSel:hover {
+        background: white;
+        transform: scale(1.02);
       }
       .h {
         font-family: "Instrument Serif", serif;
@@ -226,25 +291,9 @@
   <body>
     <div class="top">
       <div class="logo">My Gallery</div>
-      <div style="display: flex; gap: 10px; align-items: center">
-        <button id="logoutBtn">Logout</button
-        ><button
-          id="menuBtn"
-          style="
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: #1c1c1c;
-            color: white;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-          "
-        >
-          ⋮
-        </button>
+      <div style="display: flex; gap: 8px">
+        <button id="logoutBtn">Logout</button>
+        <button id="menuBtn" class="topBtn" style="display: none">⋮</button>
       </div>
     </div>
     <div id="menuBox">
@@ -256,45 +305,37 @@
       ><button id="mHapus" style="color: #ff8a8a">— Hapus</button>
     </div>
     <div id="barSelect">
-      <span id="selCount">0 dipilih</span>
-      <div style="display: flex; gap: 8px">
-        <button id="btnCancel">Batal</button
-        ><button id="btnDeleteSel">Hapus</button>
-      </div>
+      <span id="selCount">0 dipilih</span><button id="btnCancel">Batal</button
+      ><button id="btnDeleteSel" style="background: #ff4d4d">Hapus</button>
     </div>
     <div id="lightbox">
-      <button
-        id="closeLight"
-        style="
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          font-size: 20px;
-          cursor: pointer;
-        "
-      >
-        ✕</button
-      ><img id="lightImg" />
+      <button id="closeLight">✕</button><img id="lightImg" src="" />
     </div>
     <div class="wrap">
       <div id="outside">
-        <div class="centerHead">
-          <input id="search" placeholder="Search folder" /><button
-            id="btnTambah"
-          >
-            ＋ New folder
-          </button>
-          <div class="sub">
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            text-align: center;
+          "
+        >
+          <input
+            id="search"
+            placeholder="Search folder"
+            style="text-align: center; width: 100%; max-width: 380px"
+          />
+          <div style="margin-top: 18px">
+            <button id="btnTambah">＋ New folder</button>
+          </div>
+          <div class="sub" style="margin-top: 12px; text-align: center">
             <b id="folderCount">0</b> Folder <b id="photoCount">0</b> Foto
           </div>
         </div>
-        <div id="folderList"></div>
+        <div id="folderList" style="margin-top: 28px"></div>
       </div>
       <div id="inside">
         <button id="back" class="back">← Back</button>
@@ -330,18 +371,18 @@
         lightImg = document.getElementById("lightImg");
       function save() {
         localStorage.setItem("myFolders", JSON.stringify(folders));
-        const total = folders.reduce((s, f) => {
+        const totalPhotos = folders.reduce((s, f) => {
           try {
             return (
               s +
               JSON.parse(localStorage.getItem("photos_" + f.id) || "[]").length
             );
-          } catch {
+          } catch (e) {
             return s;
           }
         }, 0);
         document.getElementById("folderCount").textContent = folders.length;
-        document.getElementById("photoCount").textContent = total;
+        document.getElementById("photoCount").textContent = totalPhotos;
       }
       function render() {
         list.innerHTML = "";
@@ -354,20 +395,27 @@
             );
             const d = document.createElement("div");
             d.className = "folder";
-            d.innerHTML = `<b>${f.name}</b><span>${ph.length} FOTO</span>`;
+            d.innerHTML = `<b>${f.name}</b><span>${ph.length} Foto</span>`;
             d.onclick = () => openFolder(f.id);
             list.appendChild(d);
           });
         save();
+      }
+      function renameFolder(id) {
+        const f = folders.find((x) => x.id == id);
+        const n = prompt("Ganti nama folder:", f.name);
+        if (!n || !n.trim()) return;
+        f.name = n.trim();
+        save();
+        render();
+        if (activeId == id) folderName.textContent = f.name;
       }
       function openFolder(id) {
         activeId = id;
         selectMode = false;
         selected.clear();
         updateBar();
-        document.getElementById("folderName").textContent = folders.find(
-          (x) => x.id == id,
-        ).name;
+        folderName.textContent = folders.find((x) => x.id == id).name;
         outside.style.display = "none";
         inside.style.display = "block";
         logoutBtn.style.display = "none";
@@ -380,20 +428,34 @@
         const photos = JSON.parse(
           localStorage.getItem("photos_" + activeId) || "[]",
         );
-        document.getElementById("insideSub").textContent =
+        insideSub.textContent =
           photos.length + " Foto • double klik untuk perbesar";
         if (!photos.length) {
           photosDiv.innerHTML =
-            "<p style='color:#777;font-size:13px'>Belum ada Foto.</p>";
+            "<p style='color:#777;font-size:13px'>Belum ada Foto.Klik ⋮ → Tambahkan Foto</p>";
           return;
         }
         photos.forEach((src, i) => {
           const w = document.createElement("div");
-          w.className = "photoWrap";
+          w.className =
+            "photoWrap" +
+            (selectMode ? " selectMode" : "") +
+            (selected.has(i) ? " selected" : "");
           const img = document.createElement("img");
           img.src = src;
+          const chk = document.createElement("div");
+          chk.className = "check";
+          chk.textContent = selected.has(i) ? "✓" : "";
           w.appendChild(img);
+          w.appendChild(chk);
+          w.onclick = () => {
+            if (!selectMode) return;
+            if (selected.has(i)) selected.delete(i);
+            else selected.add(i);
+            renderPhotos();
+          };
           w.ondblclick = () => {
+            if (selectMode) return;
             lightImg.src = src;
             lightbox.classList.add("show");
           };
@@ -402,7 +464,12 @@
         updateBar();
       }
       function updateBar() {
-        bar.style.display = "none";
+        if (!selectMode || selected.size === 0) {
+          bar.style.display = "none";
+          return;
+        }
+        bar.style.display = "flex";
+        selCount.textContent = selected.size + " dipilih";
       }
       logoutBtn.onclick = () => {
         localStorage.removeItem("isLoggedIn");
@@ -411,13 +478,93 @@
       menuBtn.onclick = () =>
         (menuBox.style.display =
           menuBox.style.display === "flex" ? "none" : "flex");
+      window.addEventListener("click", (e) => {
+        if (e.target !== menuBtn && !menuBox.contains(e.target))
+          menuBox.style.display = "none";
+      });
       lightbox.onclick = (e) => {
         if (e.target === lightbox || e.target === lightImg)
           lightbox.classList.remove("show");
       };
-      document.getElementById("closeLight").onclick = () =>
-        lightbox.classList.remove("show");
-      document.getElementById("btnTambah").onclick = () => {
+      closeLight.onclick = () => lightbox.classList.remove("show");
+      mPilih.onclick = () => {
+        menuBox.style.display = "none";
+        selectMode = !selectMode;
+        selected.clear();
+        mPilih.textContent = selectMode ? "✕ Batal Pilih" : "✓ Pilih";
+        renderPhotos();
+      };
+      mPilihSemua.onclick = () => {
+        menuBox.style.display = "none";
+        const photos = JSON.parse(
+          localStorage.getItem("photos_" + activeId) || "[]",
+        );
+        if (!selectMode) {
+          selectMode = true;
+          mPilih.textContent = "✕ Batal Pilih";
+        }
+        if (selected.size === photos.length) selected.clear();
+        else photos.forEach((_, i) => selected.add(i));
+        renderPhotos();
+      };
+      mTambahFoto.onclick = () => {
+        menuBox.style.display = "none";
+        fileInput.click();
+      };
+      mTambahFolder.onclick = () => {
+        menuBox.style.display = "none";
+        const n = prompt("Nama folder baru:");
+        if (!n) return;
+        folders.push({ id: Date.now(), name: n.trim() });
+        save();
+      };
+      mRename.onclick = () => {
+        menuBox.style.display = "none";
+        renameFolder(activeId);
+      };
+      mHapus.onclick = () => {
+        menuBox.style.display = "none";
+        const photos = JSON.parse(
+          localStorage.getItem("photos_" + activeId) || "[]",
+        );
+        if (selectMode && selected.size > 0) {
+          if (!confirm("Hapus " + selected.size + " Foto?")) return;
+          const newPhotos = photos.filter((_, i) => !selected.has(i));
+          localStorage.setItem("photos_" + activeId, JSON.stringify(newPhotos));
+          selected.clear();
+          selectMode = false;
+          mPilih.textContent = "✓ Pilih";
+          renderPhotos();
+          render();
+        } else {
+          if (
+            !confirm(
+              "Hapus folder '" +
+                folders.find((x) => x.id == activeId).name +
+                "' ?",
+            )
+          )
+            return;
+          folders = folders.filter((f) => f.id != activeId);
+          localStorage.removeItem("photos_" + activeId);
+          save();
+          inside.style.display = "none";
+          outside.style.display = "block";
+          logoutBtn.style.display = "flex";
+          menuBtn.style.display = "none";
+          bar.style.display = "none";
+          activeId = null;
+          render();
+        }
+      };
+      btnCancel.onclick = () => {
+        selectMode = false;
+        selected.clear();
+        mPilih.textContent = "✓ Pilih";
+        renderPhotos();
+      };
+      btnDeleteSel.onclick = () => mHapus.click();
+      btnTambah.onclick = () => {
         const n = prompt("Nama folder baru:");
         if (!n) return;
         folders.push({ id: Date.now(), name: n.trim() });
@@ -425,13 +572,38 @@
         render();
       };
       search.oninput = render;
-      document.getElementById("back").onclick = () => {
+      back.onclick = () => {
         inside.style.display = "none";
         outside.style.display = "block";
-        logoutBtn.style.display = "block";
+        logoutBtn.style.display = "flex";
         menuBtn.style.display = "none";
+        menuBox.style.display = "none";
+        bar.style.display = "none";
+        selectMode = false;
+        selected.clear();
+        mPilih.textContent = "✓ Pilih";
         activeId = null;
         render();
+      };
+      fileInput.onchange = (e) => {
+        const files = [...e.target.files];
+        if (!files.length) return;
+        const key = "photos_" + activeId;
+        let ph = JSON.parse(localStorage.getItem(key) || "[]");
+        let l = 0;
+        files.forEach((f) => {
+          const r = new FileReader();
+          r.onload = (ev) => {
+            ph.push(ev.target.result);
+            l++;
+            if (l === files.length) {
+              localStorage.setItem(key, JSON.stringify(ph));
+              renderPhotos();
+              render();
+            }
+          };
+          r.readAsDataURL(f);
+        });
       };
       render();
     </script>
