@@ -2,166 +2,129 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Welcome - My Gallery</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <style>
       * {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
       body {
-        margin: 0;
+        background: #0d0d0d;
+        color: #f5f3ef;
+        font-family: "Inter", sans-serif;
         min-height: 100vh;
-        background: #0f0f0f;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: "Inter", sans-serif;
-        overflow: hidden;
-      }
-      .bg {
-        position: absolute;
-        inset: 0;
-        background:
-          radial-gradient(600px at 20% 20%, #1f1f1f 0%, transparent 60%),
-          radial-gradient(500px at 80% 80%, #1a1a1a 0%, transparent 60%);
+        padding: 20px;
       }
       .card {
-        position: relative;
-        background: rgba(22, 22, 22, 0.9);
-        backdrop-filter: blur(24px);
-        padding: 42px 34px 28px;
+        width: 100%;
+        max-width: 420px;
+        background: #141414;
+        border: 1px solid rgba(255, 255, 255, 0.07);
         border-radius: 28px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        width: 360px;
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+        padding: 40px 28px 32px;
+        text-align: center;
       }
-      .dot {
-        width: 40px;
-        height: 40px;
-        background: white;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        margin-bottom: 20px;
-      }
-      h2 {
+      .title {
         font-family: "Instrument Serif", serif;
-        font-size: 30px;
-        font-weight: 400;
-        color: #f5f3ef;
-        margin: 0 0 6px;
+        font-size: 44px;
+        letter-spacing: 0.04em;
+        line-height: 1;
       }
       .sub {
-        color: #7a7a7a;
-        font-size: 12.5px;
-        margin-bottom: 28px;
+        color: #777;
+        font-size: 13.5px;
+        margin-top: 14px;
+        letter-spacing: 0.02em;
       }
-      input {
+      .inputs {
+        margin-top: 36px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .inputs input {
         width: 100%;
-        padding: 14px 16px;
-        margin-bottom: 14px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: #1c1c1c;
-        color: white;
-        font-size: 14px;
+        padding: 16px 20px;
+        border-radius: 100px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #1e1e1e;
+        color: #fff;
         outline: none;
+        text-align: center;
+        font-size: 14px;
+        font-family: "Inter", sans-serif;
       }
-      input:focus {
-        border-color: rgba(255, 255, 255, 0.25);
-        background: #222;
+      .inputs input::placeholder {
+        color: #666;
       }
-      button {
+      .inputs input:focus {
+        border-color: rgba(255, 255, 255, 0.22);
+        background: #232323;
+      }
+      #loginBtn {
+        margin-top: 10px;
         width: 100%;
-        padding: 14px;
-        border-radius: 12px;
+        padding: 16px;
+        border-radius: 100px;
         border: none;
         background: #f5f3ef;
-        color: #0f0f0f;
+        color: #0d0d0d;
         font-weight: 500;
         font-size: 14px;
+        letter-spacing: 0.06em;
         cursor: pointer;
+        transition: 0.2s;
       }
-      button:hover {
-        background: white;
-      }
-      #msg {
-        color: #ff7a7a;
-        font-size: 12px;
-        margin-top: 10px;
-        min-height: 14px;
-        text-align: center;
+      #loginBtn:hover {
+        background: #fff;
+        transform: translateY(-1px);
       }
       .foot {
-        margin-top: 20px;
-        width: 100%;
-        text-align: center;
-        font-size: 11.5px;
-        color: #6e6e6e;
-        letter-spacing: 0.05em;
-        font-weight: 300;
-        font-style: italic;
-        display: block;
+        margin-top: 32px;
+        color: #555;
+        font-size: 12px;
+        letter-spacing: 0.02em;
       }
     </style>
   </head>
   <body>
-    <div class="bg"></div>
     <div class="card">
-      <div class="dot">◐</div>
-      <h2>My Gallery</h2>
+      <div class="title">Selamat Datang</div>
       <div class="sub">Silahkan Login Terlebih Dahulu</div>
-      <input id="user" placeholder="Username" /><input
-        id="pass"
-        type="password"
-        placeholder="Password"
-      />
-      <button id="btnLogin">LOGIN</button>
-      <div id="msg"></div>
+
+      <div class="inputs">
+        <input id="user" placeholder="Username" />
+        <input id="pass" type="password" placeholder="Password" />
+        <button id="loginBtn">LOGIN</button>
+      </div>
+
       <div class="foot">@ariesprolinkofficial</div>
     </div>
+
     <script>
-      if (location.search.includes("logout")) {
-        localStorage.removeItem("isLoggedIn");
-      }
-      async function doLogin() {
-        const r = await fetch("/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: user.value, password: pass.value }),
-        });
-        const d = await r.json();
-        if (d.success) {
+      const u = document.getElementById("user"),
+        p = document.getElementById("pass"),
+        b = document.getElementById("loginBtn");
+      b.onclick = () => {
+        if (u.value.trim() === "admin" && p.value.trim() === "admin123") {
           localStorage.setItem("isLoggedIn", "true");
           location.href = "index.html";
         } else {
-          msg.textContent = "Username / Password salah";
+          alert("Username / Password salah!");
         }
-      }
-      btnLogin.onclick = doLogin;
-      user.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          doLogin();
-        }
+      };
+      p.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") b.click();
       });
-      pass.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          doLogin();
-        }
-      });
-      if (
-        localStorage.getItem("isLoggedIn") === "true" &&
-        !location.search.includes("logout")
-      )
-        location.href = "index.html";
     </script>
   </body>
 </html>
